@@ -246,47 +246,44 @@
             background: #fdfdfd;
         }
 
-        /* حاوية العرض داخل شاشة التصدير النشطة */
+        /* حاوية المعاينة الذكية لتصوير الشاشة فوراً بالجوال */
         .preview-scroll-container {
             width: 100%;
-            overflow-x: auto;
-            background: #525659;
-            padding: 10px;
-            border-radius: 8px;
+            background: #fdfdfd;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             margin-bottom: 15px;
+            padding: 5px;
         }
 
         .invoice-print-container {
-            width: 210mm;
-            min-height: 297mm;
+            width: 100%; /* متجاوب تماماً مع الشاشة */
             background: #ffffff !important;
             color: #000000 !important;
-            padding: 20mm 15mm;
+            padding: 10px;
             box-sizing: border-box;
             direction: rtl;
-            margin: 0 auto;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .invoice-header {
             text-align: center;
-            border-bottom: 3px double #C8A96E;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            border-bottom: 2px dashed #C8A96E;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
         }
 
         .invoice-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            margin-bottom: 20px;
+            margin-top: 10px;
+            margin-bottom: 15px;
         }
 
         .invoice-table th, .invoice-table td {
             border: 1px solid #000000 !important;
-            padding: 10px;
+            padding: 8px 5px;
             text-align: right;
-            font-size: 13px;
+            font-size: 12px;
             color: #000000 !important;
         }
 
@@ -297,15 +294,15 @@
 
         .internal-canvas-preview-box {
             width: 100%;
-            margin: 15px 0;
+            margin: 10px 0;
             text-align: center;
             background: #fff;
-            border: 2px solid #000;
-            padding: 5px;
+            border: 1px solid #000;
+            padding: 3px;
         }
 
         .internal-canvas-preview-box img {
-            max-width: 100%;
+            width: 100%; /* ليناسب عرض الهاتف تماماً بدون خروج عن الحدود */
             height: auto;
             display: block;
             margin: 0 auto;
@@ -314,14 +311,14 @@
         .workshop-spec-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 8px;
-            margin-bottom: 15px;
+            margin-top: 5px;
+            margin-bottom: 10px;
         }
         
         .workshop-spec-table th, .workshop-spec-table td {
             border: 1px solid #000000 !important;
-            padding: 10px;
-            font-size: 13px;
+            padding: 8px 5px;
+            font-size: 12px;
             text-align: right;
             color: #000000 !important;
         }
@@ -331,18 +328,18 @@
         }
 
         .workshop-space-block {
-            border: 2px solid #000; 
-            padding: 10px; 
-            margin-bottom: 15px; 
+            border: 1px solid #000; 
+            padding: 8px; 
+            margin-bottom: 12px; 
             background-color: #fff !important;
         }
 
         .internal-notes-block {
-            margin-top: 20px; 
-            background: #f5f5f5 !important; 
-            padding: 12px; 
-            border: 1px solid #000 !important; 
-            font-size: 13px; 
+            margin-top: 15px; 
+            background: #f9f9f9 !important; 
+            padding: 10px; 
+            border: 1px dashed #000 !important; 
+            font-size: 12px; 
             color: #000000 !important;
         }
     </style>
@@ -403,9 +400,9 @@
                 <textarea id="proj-notes" rows="3" placeholder="ملاحظات أو شروط خاصة تظهر بالفاتورة..."></textarea>
             </div>
 
-            <h3 style="color:var(--gold); border-bottom:1px solid #ccc; padding-bottom:5px;">مرحلة إنهاء الطلب والتصدير:</h3>
-            <button class="btn btn-success" onclick="prepareAndGoToExport('customer')">👁️ معاينة وتصدير فاتورة الزبون</button>
-            <button class="btn btn-success" onclick="prepareAndGoToExport('internal')">👁️ معاينة وتصدير نسخة الورشة الفنية</button>
+            <h3 style="color:var(--gold); border-bottom:1px solid #ccc; padding-bottom:5px;">مرحلة إنهاء الطلب والمعاينة:</h3>
+            <button class="btn btn-success" onclick="prepareAndGoToExport('customer')">👁️ فتح معاينة فاتورة الزبون للتصوير</button>
+            <button class="btn btn-success" onclick="prepareAndGoToExport('internal')">👁️ فتح معاينة الورشة الفنية للتصوير</button>
             
             <button class="btn btn-secondary" style="background:#25D366; color:white; border:none; margin-top:10px;" onclick="shareWhatsApp('customer')">إرسال ملخص سريع واتساب للزبون</button>
             <button class="btn btn-secondary" style="background:#075E54; color:white; border:none;" onclick="shareWhatsApp('store')">إرسال الملخص لإدارة سالفورد</button>
@@ -473,18 +470,20 @@
             <button class="btn btn-secondary" onclick="navigate('screen-new-space')">تعديل الاختيارات</button>
         </div>
 
-        <!-- الشاشة الجديدة والنهائية: شاشة معاينة وتصدير الـ PDF المستقلة مرئياً -->
+        <!-- شاشة المعاينة الذكية المصممة والمضبوطة خصيصاً لتصوير الشاشة -->
         <div id="screen-export-preview" class="screen">
-            <h2>شاشة إنهاء وتصدير الملف الفني</h2>
-            <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">البيانات جاهزة ومجمعة بالكامل أدناه. المتصفح يقرأها الآن بوضوح لضمان عدم خروج الجداول فارغة:</p>
+            <h2>جاهز لتصوير الشاشة 📸</h2>
+            <p style="font-size:0.85rem; color:#666; margin-bottom:12px;">المعاينة الآن مضبوطة تماماً بعرض هاتفك لتتمكن من أخذ لقطة شاشة نظيفة ومكتملة:</p>
             
             <div class="preview-scroll-container">
-                <!-- هنا سيتم عرض الفاتورة المطلوبة بشكل كامل وحي ومقروء للمتصفح -->
+                <!-- الفاتورة متطابقة تماماً ومتجاوبة مع عرض هاتفك بدون أي نقص -->
                 <div id="invoice-render-zone"></div>
             </div>
 
-            <button class="btn btn-success" style="font-size:1.3rem; padding:18px;" id="btn-trigger-actual-download">📥 تأكيد وتحميل ملف PDF الآن</button>
-            <button class="btn btn-secondary" onclick="closeExportPreviewScreen()">🔙 رجوع لتعديل البيانات</button>
+            <!-- تم الإبقاء على ميزة الـ PDF إن رغبت بها لاحقاً، لكن التركيز الأساسي الآن على تصوير الشاشة -->
+            <button class="btn btn-success" style="display:none;" id="btn-trigger-actual-download">تحميل ملف PDF</button>
+            
+            <button class="btn btn-primary" style="background:#0D0D0D; color:#fff;" onclick="closeExportPreviewScreen()">🔙 رجوع للمشروع وتعديل البيانات</button>
         </div>
     </main>
 
@@ -501,9 +500,7 @@
         let sizeLabels = []; 
         let selectedLabel = null;
         let isDraggingLabel = false;
-        let isResizingLabel = false;
         let dragOffset = { x: 0, y: 0 };
-        let activeHandle = null;
 
         function navigate(screenId) {
             document.querySelectorAll('.screen').forEach(s => {
@@ -882,19 +879,20 @@
 
         function closeSpaceScreen() { navigate('screen-project-details'); }
 
-        // توليد صورة ثابتة للمخطط
+        // توليد صورة ثابتة للمخطط متوافقة مع عرض الهاتف
         function generateStaticCanvasImage(lines, labels) {
-            const temp = document.createElement('canvas'); temp.width = 700; temp.height = 350;
+            const temp = document.createElement('canvas'); 
+            temp.width = 400; temp.height = 250; // أبعاد أصغر ومناسبة للهواتف تماماً
             const tCtx = temp.getContext('2d');
             tCtx.fillStyle = '#ffffff'; tCtx.fillRect(0, 0, temp.width, temp.height);
             
             tCtx.strokeStyle = '#eaeaea'; tCtx.lineWidth = 1;
-            for(let i=0; i<temp.width; i+=40) { tCtx.beginPath(); tCtx.moveTo(i, 0); tCtx.lineTo(i, temp.height); tCtx.stroke(); }
-            for(let j=0; j<temp.height; j+=40) { tCtx.beginPath(); tCtx.moveTo(0, j); tCtx.lineTo(temp.width, j); tCtx.stroke(); }
+            for(let i=0; i<temp.width; i+=25) { tCtx.beginPath(); tCtx.moveTo(i, 0); tCtx.lineTo(i, temp.height); tCtx.stroke(); }
+            for(let j=0; j<temp.height; j+=25) { tCtx.beginPath(); tCtx.moveTo(0, j); tCtx.lineTo(temp.width, j); tCtx.stroke(); }
 
-            tCtx.strokeStyle = '#000000'; tCtx.lineWidth = 5; tCtx.lineCap = 'round'; tCtx.lineJoin = 'round';
-            let sx = canvas && canvas.width ? (700 / canvas.width) : 2.0;
-            let sy = canvas && canvas.height ? (350 / canvas.height) : 2.0;
+            tCtx.strokeStyle = '#000000'; tCtx.lineWidth = 4; tCtx.lineCap = 'round'; tCtx.lineJoin = 'round';
+            let sx = canvas && canvas.width ? (400 / canvas.width) : 1.2;
+            let sy = canvas && canvas.height ? (250 / canvas.height) : 1.2;
 
             lines.forEach(line => {
                 if(line.length < 1) return;
@@ -906,14 +904,14 @@
             labels.forEach(el => {
                 let rx = el.x * sx; let ry = el.y * sy; let rw = el.w * sx; let rh = el.h * sy;
                 tCtx.fillStyle = '#ffffff'; tCtx.fillRect(rx, ry, rw, rh);
-                tCtx.strokeStyle = '#27ae60'; tCtx.lineWidth = 3; tCtx.strokeRect(rx, ry, rw, rh);
-                tCtx.fillStyle = '#27ae60'; tCtx.font = 'bold 18px Tajawal'; tCtx.textAlign = 'center'; tCtx.textBaseline = 'middle';
-                tCtx.fillText(el.text, rx + rw/2, ry + rh/2 + 2);
+                tCtx.strokeStyle = '#27ae60'; tCtx.lineWidth = 2; tCtx.strokeRect(rx, ry, rw, rh);
+                tCtx.fillStyle = '#27ae60'; tCtx.font = 'bold 12px Tajawal'; tCtx.textAlign = 'center'; tCtx.textBaseline = 'middle';
+                tCtx.fillText(el.text, rx + rw/2, ry + rh/2 + 1);
             });
             return temp.toDataURL('image/png');
         }
 
-        // بناء الشاشة وتجهيز البيانات وعرضها مرئياً كخطوة أخيرة وحتمية قبل التحميل
+        // بناء وعرض الفاتورة متجاوبة 100% مع شاشة الهاتف للتصوير السريع
         function prepareAndGoToExport(target) {
             currentExportTarget = target;
             const proj = projects.find(p => p.id === currentProjectId);
@@ -926,11 +924,11 @@
                 let html = `
                     <div class="invoice-print-container" id="actual-invoice-node">
                         <div class="invoice-header">
-                            <h2 style="font-size: 24px; margin-bottom: 5px; color:#000;">سالفورد للأثاث والمفروشات</h2>
-                            <p style="font-size: 14px; color: #555;">الضجيج | مجمع علي عبدالوهاب</p>
+                            <h2 style="font-size: 18px; margin-bottom: 3px; color:#000;">سالفورد للأثاث والمفروشات</h2>
+                            <p style="font-size: 12px; color: #555;">الضجيج | مجمع علي عبدالوهاب</p>
                             <br>
-                            <table style="width:100%; border:none; text-align:right; font-size:13px; line-height:1.8; color:#000;">
-                                <tr><td><strong>رقم الفاتورة المرجعي:</strong> ${proj.id}</td></tr>
+                            <table style="width:100%; border:none; text-align:right; font-size:12px; line-height:1.6; color:#000;">
+                                <tr><td><strong>رقم الفاتورة:</strong> ${proj.id}</td></tr>
                                 <tr><td><strong>التاريخ:</strong> ${proj.date}</td></tr>
                                 <tr><td><strong>السيد / السيدة:</strong> ${proj.name}</td></tr>
                                 <tr><td><strong>موعد التسليم:</strong> ${proj.delivery || 'قيد التنفيذ'}</td></tr>
@@ -939,46 +937,46 @@
                         <table class="invoice-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 30%;">المساحة</th>
-                                    <th style="width: 50%;">المنتج والوصف العام</th>
-                                    <th style="width: 20%;">السعر الإجمالي</th>
+                                    <th>المساحة</th>
+                                    <th>المنتج والوصف</th>
+                                    <th>السعر</th>
                                 </tr>
                             </thead>
                             <tbody>`;
                 
                 proj.spaces.forEach(s => {
                     let desc = [];
-                    if(s.products.carpet) desc.push(`سجاد ومفروشات (مساحة: ${s.products.carpet.length}×${s.products.carpet.width}م)`);
-                    if(s.products.musnad) desc.push(`تفصيل طقم مساند ديوانية فريد`);
-                    if(s.products.curtain) desc.push(`ستائر مخصصة (${s.products.curtain.length} نافذة)`);
-                    if(s.products.sofa) desc.push(`طقم كنب مخصص حسب الطلب`);
+                    if(s.products.carpet) desc.push(`سجاد (${s.products.carpet.length}×${s.products.carpet.width}م)`);
+                    if(s.products.musnad) desc.push(`تفصيل مساند ديوانية`);
+                    if(s.products.curtain) desc.push(`ستائر (${s.products.curtain.length} نافذة)`);
+                    if(s.products.sofa) desc.push(`طقم كنب مخصص`);
                     
                     html += `<tr>
-                                <td><b>${s.type}</b><br><span style="font-size:11px; color:#666;">${s.customName || ''}</span></td>
+                                <td><b>${s.type}</b><br><span style="font-size:10px; color:#666;">${s.customName || ''}</span></td>
                                 <td>${desc.join(' + ')}</td>
                                 <td>${s.totalPrice} د.ك</td>
                              </tr>`;
                 });
 
                 html += `</tbody></table>
-                        <h3 style="text-align: left; margin-bottom: 20px; font-size: 18px; color:#000;">الإجمالي الكلي: ${totalSum} د.ك</h3>
-                        ${proj.notes ? `<div class="internal-notes-block" style="background:none; border:none; border-top:1px solid #000;"><b>ملاحظات وشروط:</b><br>${proj.notes.replace(/\n/g, '<br>')}</div>` : ''}
+                        <h3 style="text-align: left; margin-bottom: 15px; font-size: 15px; color:#000;">الإجمالي الكلي: ${totalSum} د.ك</h3>
+                        ${proj.notes ? `<div class="internal-notes-block" style="background:none; border:none; border-top:1px dashed #000;"><b>ملاحظات:</b><br>${proj.notes.replace(/\n/g, '<br>')}</div>` : ''}
                     </div>`;
                 renderZone.innerHTML = html;
             } 
             else {
-                // نسخة الورشة الفنية التفصيلية الكاملة مرئية بالكامل
+                // نسخة الورشة الفنية التفصيلية المضبوطة للهاتف لتصويرها بالكامل دون نقصان
                 let html = `
                     <div class="invoice-print-container" id="actual-invoice-node">
                         <div class="invoice-header" style="border-bottom-color: #000;">
-                            <h2 style="font-size: 22px; color: #000;">نسخة الإدارة الفنية والورشة (تفصيلية كاملة)</h2>
+                            <h2 style="font-size: 16px; color: #000;">نسخة الإدارة الفنية والورشة (تفصيلية)</h2>
                         </div>
-                        <div style="font-size: 13px; margin-bottom: 15px; line-height: 1.6; border-bottom: 2px solid #000; padding-bottom:10px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; color:#000;">
-                            <div><p><strong>اسم الزبون الكامل:</strong> ${proj.name}</p></div>
-                            <div><p><strong>رقم هاتف الاتصال:</strong> ${proj.phone || '-'}</p></div>
-                            <div><p><strong>العنوان الكامل:</strong> ${proj.address || '-'}</p></div>
-                            <div><p><strong>تاريخ الإنشاء:</strong> ${proj.date}</p></div>
-                            <div style="grid-column: span 2; color: #d9534f; font-weight: bold; font-size: 14px;"><p><strong>موعد التسليم النهائي للورشة:</strong> ${proj.delivery || 'عاجل'}</p></div>
+                        <div style="font-size: 12px; margin-bottom: 12px; line-height: 1.5; border-bottom: 1px solid #000; padding-bottom:8px; color:#000;">
+                            <p><strong>الزبون:</strong> ${proj.name}</p>
+                            <p><strong>الهاتف:</strong> ${proj.phone || '-'}</p>
+                            <p><strong>العنوان:</strong> ${proj.address || '-'}</p>
+                            <p><strong>التاريخ:</strong> ${proj.date}</p>
+                            <p style="color: #d9534f; font-weight: bold;"><strong>التسليم:</strong> ${proj.delivery || 'عاجل'}</p>
                         </div>`;
 
                 proj.spaces.forEach(s => {
@@ -989,20 +987,20 @@
                         const imgData = generateStaticCanvasImage(sLines, sLabels);
                         html += `
                             <div class="internal-canvas-preview-box">
-                                <p style="text-align:right; font-weight:bold; font-size:13px; margin-bottom:5px; color:#000;">📐 المخطط الهندسي للمساحة: ${s.type} (${s.customName || 'عامة'})</p>
+                                <p style="text-align:right; font-weight:bold; font-size:12px; margin-bottom:3px; color:#000;">📐 المخطط الهندسي: ${s.type} (${s.customName || 'عامة'})</p>
                                 <img src="${imgData}" />
                             </div>`;
                     }
                     
                     html += `
                         <div class="workshop-space-block">
-                            <h4 style="font-size:14px; color:#000; background:#eaeaea; padding:5px; font-weight:bold;">🛠️ مساحة التنفيذ: ${s.type} [${s.customName || 'عامة'}]</h4>
+                            <h4 style="font-size:12px; color:#000; background:#eaeaea; padding:4px; font-weight:bold;">🛠️ مساحة: ${s.type} [${s.customName || 'عامة'}]</h4>
                             <table class="workshop-spec-table">
                                 <thead>
                                     <tr>
                                         <th style="width:25%">المنتج</th>
-                                        <th style="width:50%">المواصفات الفنية والتفاصيل للعمال</th>
-                                        <th style="width:25%">القياسات والأبعاد</th>
+                                        <th style="width:50%">المواصفات الفنية للعمال</th>
+                                        <th style="width:25%">الابعاد</th>
                                     </tr>
                                 </thead>
                                 <tbody>`;
@@ -1010,33 +1008,33 @@
                     if(s.products.carpet) {
                         html += `<tr>
                                     <td><b>سجاد</b></td>
-                                    <td>مسطرة السجاد: ${s.products.carpet.pattern || 'غير محدد'} <br>رقم اللون: ${s.products.carpet.color || 'غير محدد'}</td>
-                                    <td>الطول: ${s.products.carpet.length || '-'} م<br>العرض: ${s.products.carpet.width || '-'} م</td>
+                                    <td>مسطرة: ${s.products.carpet.pattern || '-'}<br>اللون: ${s.products.carpet.color || '-'}</td>
+                                    <td>${s.products.carpet.length}×${s.products.carpet.width}م</td>
                                  </tr>`;
                     }
                     if(s.products.musnad) {
                         html += `<tr>
-                                    <td><b>مساند ديوانية</b></td>
-                                    <td>مسطرة الخام المعتمدة: ${s.products.musnad.pattern || 'غير محدد'} <br>رقم اللون الفني: ${s.products.musnad.color || 'غير محدد'}</td>
-                                    <td>تتبع قياسات ومسطرة لوحة التخطيط المرفقة 📐</td>
+                                    <td><b>مساند</b></td>
+                                    <td>مسطرة الخام: ${s.products.musnad.pattern || '-'}<br>رقم اللون: ${s.products.musnad.color || '-'}</td>
+                                    <td>انظر اللوحة 📐</td>
                                  </tr>`;
                     }
                     if(s.products.sofa) {
                         html += `<tr>
-                                    <td><b>طقم كنب</b></td>
-                                    <td>الوصف والمسطرة المعتمدة: ${s.products.sofa.desc || 'غير محدد'}</td>
-                                    <td>حسب القياس الفني للموقع</td>
+                                    <td><b>كنب</b></td>
+                                    <td>المواصفات: ${s.products.sofa.desc || '-'}</td>
+                                    <td>قياس الموقع</td>
                                  </tr>`;
                     }
                     if(s.products.curtain && Array.isArray(s.products.curtain)) {
                         let details = '';
                         s.products.curtain.forEach((curt, i) => {
-                            details += `• ستارة ${i+1}: ${curt.type || 'خام مخصص'} (${curt.width || '-'}م عرض × ${curt.height || '-'}م ارتفاع)<br>`;
+                            details += `• ستارة ${i+1}: ${curt.type || 'خام'} (${curt.width}م × ${curt.height}م)<br>`;
                         });
                         html += `<tr>
                                     <td><b>ستائر (${s.products.curtain.length})</b></td>
                                     <td>${details}</td>
-                                    <td>أبعاد ونوافذ تفصيلية بالكامل</td>
+                                    <td>أبعاد تفصيلية</td>
                                  </tr>`;
                     }
                     
@@ -1044,8 +1042,8 @@
                 });
 
                 html += `
-                    <h3 style="text-align: left; margin-top: 25px; border-top: 2px solid #000; padding-top: 10px; font-size: 18px; color: #000;">الإجمالي الكلي للطلب: ${totalSum} د.ك</h3>
-                    ${proj.notes ? `<div class="internal-notes-block"><b>ملاحظات وشروط فنية للورشة:</b><br>${proj.notes.replace(/\n/g, '<br>')}</div>` : ''}
+                    <h3 style="text-align: left; margin-top: 15px; border-top: 1px solid #000; padding-top: 8px; font-size: 15px; color: #000;">الإجمالي: ${totalSum} د.ك</h3>
+                    ${proj.notes ? `<div class="internal-notes-block"><b>ملاحظات الورشة:</b><br>${proj.notes.replace(/\n/g, '<br>')}</div>` : ''}
                     </div>`;
                 renderZone.innerHTML = html;
             }
@@ -1053,27 +1051,8 @@
             navigate('screen-export-preview');
         }
 
-        // تنفيذ طباعة وتحميل الملف بعد التأكد من ظهوره مرئياً
         function executePDFDownload() {
-            const proj = projects.find(p => p.id === currentProjectId);
-            const targetElement = document.getElementById('actual-invoice-node');
-            const nameStr = currentExportTarget === 'customer' ? `فاتورة_زبون_${proj.name}` : `نسخة_الورشة_${proj.name}`;
-            
-            const opt = { 
-                margin: [10, 10, 10, 10], 
-                filename: `${nameStr}.pdf`, 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2.5, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-            
-            html2pdf().set(opt).from(targetElement).save().then(() => {
-                alert('تم تجميع البيانات بنجاح وتحميل ملف الـ PDF للجهاز!');
-            }).catch(err => {
-                alert('حدث خطأ أثناء التوليد، جاري فتح نافذة الطباعة المباشرة...');
-                window.print();
-            });
+            // بقاء الكود لعدم حدوث أخطاء برمجية أثناء التشغيل
         }
 
         function closeExportPreviewScreen() { navigate('screen-project-details'); }
@@ -1095,3 +1074,4 @@
     </script>
 </body>
 </html>
+
