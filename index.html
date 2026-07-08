@@ -327,7 +327,7 @@
         }
 
         .invoice-table th, .invoice-table td {
-            border: 1px solid #ddd;
+            border: 1px solid #000;
             padding: 10px;
             text-align: right;
             font-size: 13px;
@@ -336,6 +336,7 @@
 
         .invoice-table th {
             background-color: #f5f5f5;
+            font-weight: bold;
         }
 
         .invoice-footer {
@@ -372,6 +373,23 @@
             height: auto;
             display: block;
             margin: 0 auto;
+        }
+
+        .workshop-spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            margin-bottom: 15px;
+        }
+        .workshop-spec-table th, .workshop-spec-table td {
+            border: 1px solid #444;
+            padding: 8px;
+            font-size: 12px;
+            text-align: right;
+            color: #000;
+        }
+        .workshop-spec-table th {
+            background-color: #eaeaea;
         }
     </style>
 </head>
@@ -420,8 +438,8 @@
             
             <h2>موعد التسليم والملاحظات</h2>
             <div class="form-group">
-                <label>موعد التسليم (داخلي فقط)</label>
-                <input type="text" id="proj-delivery" placeholder="مثال: بعد أسبوعين">
+                <label>موعد التسليم (يظهر في نسخة الورشة والزبون)</label>
+                <input type="text" id="proj-delivery" placeholder="مثال: بعد 7 أيام - تاريخ 15 / 7">
             </div>
             <div class="form-group">
                 <label>ملاحظات عامة (تظهر في الفاتورتين)</label>
@@ -429,7 +447,7 @@
             </div>
 
             <button class="btn btn-primary" onclick="exportPDF('customer')">تحميل فاتورة الزبون PDF</button>
-            <button class="btn btn-primary" onclick="exportPDF('internal')">تحميل نسختي الداخلية PDF</button>
+            <button class="btn btn-primary" onclick="exportPDF('internal')">تحميل نسخة الورشة PDF</button>
             
             <div class="alert-info-wa">
                 💡 روابط واتساب لا تدعم إرفاق ملف الـ PDF تلقائياً، يرجى تحميل الفاتورة للجهاز أولاً ثم إرفاقها يدوياً للمحادثة.
@@ -515,6 +533,7 @@
                 <tr><td><strong>رقم الفاتورة المرجعي:</strong> <span id="inv-cust-id"></span></td></tr>
                 <tr><td><strong>التاريخ:</strong> <span id="inv-cust-date"></span></td></tr>
                 <tr><td><strong>السيد / السيدة:</strong> <span id="inv-cust-name"></span></td></tr>
+                <tr><td><strong>موعد التسليم:</strong> <span id="inv-cust-delivery"></span></td></tr>
             </table>
         </div>
         <table class="invoice-table" id="inv-cust-table">
@@ -534,6 +553,7 @@
         </div>
     </div>
 
+    <!-- نسخة الورشة الفنية التفصيلية كاملة البيانات -->
     <div id="invoice-internal" class="invoice-print-container">
         <div class="invoice-header" style="border-bottom-color: #000; padding-bottom: 8px; margin-bottom: 10px;">
             <h2 style="font-size: 22px; color: #000;">نسخة الإدارة الفنية والورشة (تفصيلية كاملة)</h2>
@@ -541,15 +561,18 @@
         <div style="font-size: 13px; margin-bottom: 15px; line-height: 1.6; border-bottom: 1px solid #ccc; padding-bottom:10px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
             <div><p><strong>اسم الزبون الكامل:</strong> <span id="inv-int-name"></span></p></div>
             <div><p><strong>رقم هاتف الاتصال:</strong> <span id="inv-int-phone"></span></p></div>
-            <div><p><strong>العنوان:</strong> <span id="inv-int-address"></span></p></div>
+            <div><p><strong>العنوان الكامل:</strong> <span id="inv-int-address"></span></p></div>
             <div><p><strong>تاريخ الإنشاء:</strong> <span id="inv-int-date"></span></p></div>
-            <div style="grid-column: span 2; color: #d9534f; font-weight: bold; font-size: 14px; margin-top:3px;"><p><strong>موعد التسليم المتفق عليه:</strong> <span id="inv-int-delivery"></span></p></div>
+            <div style="grid-column: span 2; color: #d9534f; font-weight: bold; font-size: 14px; margin-top:3px;"><p><strong>موعد التسليم النهائي للورشة:</strong> <span id="inv-int-delivery"></span></p></div>
         </div>
         
+        <!-- منطقة عرض مخططات الرسم الحرة للمساند والديوانيات -->
         <div id="inv-int-top-canvas-area"></div>
+        
+        <!-- منطقة تفاصيل الخامات والمساطر والألوان جداول منفصلة -->
         <div id="inv-int-spaces-details"></div>
 
-        <h3 style="text-align: left; margin-top: 25px; border-top: 3px double #000; padding-top: 10px; font-size: 18px; color: #000;">الإجمالي الكلي المستحق للطلب: <span id="inv-int-total"></span> د.ك</h3>
+        <h3 style="text-align: left; margin-top: 25px; border-top: 3px double #000; padding-top: 10px; font-size: 18px; color: #000;">الإجمالي الكلي للطلب: <span id="inv-int-total"></span> د.ك</h3>
         <div id="inv-int-notes-area" style="margin-top:20px; background: #f5f5f5; padding: 12px; border:1px solid #999; font-size:13px; line-height:1.5;"></div>
     </div>
 
@@ -702,7 +725,7 @@
         function proceedToSpaceDetails() {
             const hasSelection = Object.values(selectedProducts).some(v => v);
             if(!hasSelection) {
-                alert('الرجاء تحديد منتج واحد على الألق!');
+                alert('الرجاء تحديد منتج واحد على الأقل!');
                 return;
             }
             if(selectedProducts.musnad) {
@@ -728,8 +751,8 @@
                             <div class="form-group"><label>العرض (م)</label><input type="number" step="0.01" id="c-width" oninput="calcCarpetArea()"></div>
                         </div>
                         <p id="c-area-display" style="font-weight:bold; color:#8e44ad; margin-bottom:10px;">المساحة: 0 م²</p>
-                        <div class="form-group"><label>اسم المسطرة</label><input type="text" id="c-pattern"></div>
-                        <div class="form-group"><label>رقم اللون</label><input type="text" id="c-color"></div>
+                        <div class="form-group"><label>مسطرة الخام / الاسم</label><input type="text" id="c-pattern" placeholder="اسم خامة السجاد أو الموديل"></div>
+                        <div class="form-group"><label>رقم اللون</label><input type="text" id="c-color" placeholder="رقم أو رمز اللون بدقة"></div>
                         <div class="form-group"><label>السعر (د.ك)</label><input type="number" id="c-price" value="0"></div>
                     </div>
                 `;
@@ -739,8 +762,8 @@
                 container.innerHTML += `
                     <div class="card" style="border-right: 4px solid var(--gold);">
                         <h4>📦 تفاصيل المساند</h4>
-                        <div class="form-group"><label>مسطرة الخام</label><input type="text" id="m-pattern"></div>
-                        <div class="form-group"><label>رقم اللون</label><input type="text" id="m-color"></div>
+                        <div class="form-group"><label>مسطرة الخام</label><input type="text" id="m-pattern" placeholder="مسطرة القماش المعتمدة للظهر والمخدات"></div>
+                        <div class="form-group"><label>رقم اللون</label><input type="text" id="m-color" placeholder="رقم لون قماش المساند"></div>
                         <div class="form-group"><label>السعر (د.ك)</label><input type="number" id="m-price" value="0"></div>
                     </div>
                 `;
@@ -761,7 +784,7 @@
                 container.innerHTML += `
                     <div class="card" style="border-right: 4px solid #e67e22;">
                         <h4>📦 تفاصيل الكنب</h4>
-                        <div class="form-group"><label>الوصف</label><input type="text" id="s-desc" placeholder="كنب زاوية 6 مقاعد"></div>
+                        <div class="form-group"><label>الوصف والنوع والقياس</label><input type="text" id="s-desc" placeholder="مثال: كنب مودرن، مسطرة رقم 5، لون رمادي"></div>
                         <div class="form-group"><label>السعر (د.ك)</label><input type="number" id="s-price" value="0"></div>
                     </div>
                 `;
@@ -787,8 +810,8 @@
                     <span style="color:red; cursor:pointer;" onclick="document.getElementById('curtain-id-${curtainCounter}').remove()">حذف 🗑️</span>
                 </div>
                 <div class="form-group">
-                    <label>النوع</label>
-                    <select class="curt-type"><option value="خام">خام</option><option value="رول">رول</option></select>
+                    <label>نوع الستارة والمسطرة</label>
+                    <input type="text" class="curt-type" placeholder="مثال: رول عازل / خام مسطرة صيدون">
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
                     <div class="form-group"><label>العرض (م)</label><input type="number" step="0.01" class="curt-w"></div>
@@ -834,9 +857,9 @@
             if(mode === 'draw') {
                 hint.innerHTML = '✏️ وضع الرسم الحر نشط: ارسم الجدران والتخطيطات بإصبعك مباشرة.';
             } else if(mode === 'erase') {
-                hint.innerHTML = '🧽 ممحاة النقاط نشطة: امسح بدقة أي خط تلمسه بإصبعك كأنك تستخدم ممحاة حقيقية.';
+                hint.innerHTML = '🧽 ممحاة النقاط نشطة: امسح بدقة أي خط تلمسه.';
             } else {
-                hint.innerHTML = '🖐️ وضع التحريك نشط: اضغط على أي مربع مقاس أخضر لسحبه وإفلاته في مكانه المناسب.';
+                hint.innerHTML = '🖐️ وضع التحريك نشط: اضغط على المقاس لسحبه وإفلاته في مكانه المناسب.';
             }
         }
 
@@ -859,7 +882,7 @@
         }
 
         function deleteSelectedLabelElement() {
-            if(!selectedLabel) { alert("يرجى تحديد مربع مقاس أولاً بالضغط عليه في وضع التحريك."); return; }
+            if(!selectedLabel) { alert("يرجى تحديد مربع مقاس أولاً بالضغط عليه."); return; }
             sizeLabels = sizeLabels.filter(el => el.id !== selectedLabel.id);
             selectedLabel = null;
             redrawCanvas();
@@ -1047,7 +1070,6 @@
             });
         }
 
-        // تحسين دالة تصدير المخطط بجودة عالية تمنع التداخل البرمجي داخل الـ PDF
         function generateStaticCanvasImage(savedLines, savedLabels) {
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = 700;
@@ -1134,7 +1156,6 @@
 
         function closeSpaceScreen() { navigate('screen-project-details'); }
 
-        // تعديل دالة التصدير بالكامل لحماية مصفوفات المخطط وعرض كل التفاصيل الفنية والأسعار
         function exportPDF(target) {
             const proj = projects.find(p => p.id === currentProjectId);
             let totalSum = 0; proj.spaces.forEach(s => totalSum += Number(s.totalPrice || 0));
@@ -1143,6 +1164,8 @@
                 document.getElementById('inv-cust-id').innerText = proj.id;
                 document.getElementById('inv-cust-date').innerText = proj.date;
                 document.getElementById('inv-cust-name').innerText = proj.name;
+                document.getElementById('inv-cust-delivery').innerText = proj.delivery || 'قيد التنفيذ';
+                
                 const tbody = document.querySelector('#inv-cust-table tbody'); tbody.innerHTML = '';
                 
                 proj.spaces.forEach(s => {
@@ -1164,9 +1187,9 @@
                 document.getElementById('inv-int-phone').innerText = proj.phone || '-';
                 document.getElementById('inv-int-address').innerText = proj.address || '-';
                 document.getElementById('inv-int-date').innerText = proj.date;
-                document.getElementById('inv-int-delivery').innerText = proj.delivery || 'غير محدد';
+                document.getElementById('inv-int-delivery').innerText = proj.delivery || 'عاجل في أقرب وقت';
                 document.getElementById('inv-int-total').innerText = totalSum;
-                document.getElementById('inv-int-notes-area').innerHTML = proj.notes ? `<strong>ملاحظات الإدارة:</strong><br>${proj.notes.replace(/\n/g, '<br>')}` : '';
+                document.getElementById('inv-int-notes-area').innerHTML = proj.notes ? `<strong>ملاحظات وشروط فنية خاصة بالورشة:</strong><br>${proj.notes.replace(/\n/g, '<br>')}` : '';
 
                 const topCanvasArea = document.getElementById('inv-int-top-canvas-area');
                 const spacesDetailsContainer = document.getElementById('inv-int-spaces-details');
@@ -1182,33 +1205,64 @@
                         const previewBlock = document.createElement('div');
                         previewBlock.className = 'internal-canvas-preview-box';
                         previewBlock.innerHTML = `
-                            <p style="text-align:right; font-weight:bold; font-size:14px; margin-bottom:5px; color:#000;">📐 المخطط الفني للمساحة: ${s.type} (${s.customName || 'عامة'})</p>
+                            <p style="text-align:right; font-weight:bold; font-size:13px; margin-bottom:5px; color:#000;">📐 المخطط الهندسي للمساحة: ${s.type} (${s.customName || 'عامة'})</p>
                             <img src="${imgData}" />
                         `;
                         topCanvasArea.appendChild(previewBlock);
                     }
                     
                     const spaceBlock = document.createElement('div');
-                    spaceBlock.style.border = '1px solid #000'; spaceBlock.style.padding = '12px'; spaceBlock.style.marginBottom = '12px'; spaceBlock.style.borderRadius = '6px'; spaceBlock.style.backgroundColor = '#fafafa';
-                    let html = `<h4 style="font-size:14px; color:#000; border-bottom:1px solid #ccc; padding-bottom:4px;">📋 مواصفات: ${s.type} [${s.customName || 'عامة'}] - السعر الفرعي: ${s.totalPrice} د.ك</h4>`;
-                    html += `<div style="font-size:13px; margin-top: 8px; color:#111; line-height:1.6;">`;
+                    spaceBlock.style.border = '2px solid #000'; spaceBlock.style.padding = '10px'; spaceBlock.style.marginBottom = '15px'; spaceBlock.style.backgroundColor = '#fff';
                     
+                    let html = `<h4 style="font-size:14px; color:#000; background:#f2f2f2; padding:5px; border-bottom:1px solid #000; font-weight:bold;">🛠️ مساحة التنفيذ: ${s.type} [${s.customName || 'عامة'}]</h4>`;
+                    
+                    // جدول المواصفات الفنية للورشة
+                    html += `<table class="workshop-spec-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:20%">المنتج</th>
+                                        <th style="width:55%">المواصفات الفنية والتفاصيل للعمال</th>
+                                        <th style="width:25%">القياسات والأبعاد</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
                     if(s.products.carpet) {
-                        html += `<p style="margin-bottom:4px;">🔹 <strong>السجاد:</strong> المقاس ${s.products.carpet.length} × ${s.products.carpet.width} م | المسطرة: ${s.products.carpet.pattern || '-'} | اللون: ${s.products.carpet.color || '-'} | السعر: ${s.products.carpet.price} د.ك</p>`;
+                        html += `<tr>
+                                    <td><b>سجاد</b></td>
+                                    <td>المسطرة: ${s.products.carpet.pattern || 'غير محدد'} <br>رقم اللون: ${s.products.carpet.color || 'غير محدد'}</td>
+                                    <td>الطول: ${s.products.carpet.length} م<br>العرض: ${s.products.carpet.width} م</td>
+                                 </tr>`;
                     }
                     if(s.products.musnad) {
-                        html += `<p style="margin-bottom:4px;">🔹 <strong>المساند:</strong> مسطرة الخام: ${s.products.musnad.pattern || '-'} | رقم اللون: ${s.products.musnad.color || '-'} | السعر: ${s.products.musnad.price} د.ك</p>`;
+                        html += `<tr>
+                                    <td><b>مساند ديوانية</b></td>
+                                    <td>مسطرة الخام المعتمدة: ${s.products.musnad.pattern || 'غير محدد'} <br>رقم اللون الفني: ${s.products.musnad.color || 'غير محدد'}</td>
+                                    <td>تتبع قياسات لوحة التخطيط المرفقة 📐</td>
+                                 </tr>`;
                     }
                     if(s.products.sofa) {
-                        html += `<p style="margin-bottom:4px;">🔹 <strong>الكنب:</strong> الوصف: ${s.products.sofa.desc || '-'} | السعر: ${s.products.sofa.price} د.ك</p>`;
+                        html += `<tr>
+                                    <td><b>طقم كنب</b></td>
+                                    <td>الوصف والمسطرة: ${s.products.sofa.desc || 'غير محدد'}</td>
+                                    <td>حسب طلب العميل</td>
+                                 </tr>`;
                     }
                     if(s.products.curtain) {
-                        html += `<p style="font-weight:bold; margin-top:4px;">🔹 الستائر المخصصة:</p>`;
+                        let curtainDetails = '';
                         s.products.curtain.forEach((curt, i) => {
-                            html += `<p style="padding-right:15px; margin-bottom:2px;">- ستارة ${i+1}: نوع [${curt.type}] | العرض ${curt.width}م × الارتفاع ${curt.height}م | السعر: ${curt.price} د.ك</p>`;
+                            curtainDetails += `• ستارة ${i+1}: ${curt.type} (عرض ${curt.width}م × ارتفاع ${curt.height}م)<br>`;
                         });
+                        html += `<tr>
+                                    <td><b>ستائر (${s.products.curtain.length})</b></td>
+                                    <td>${curtainDetails}</td>
+                                    <td>انظر أبعاد النوافذ بجانبها</td>
+                                 </tr>`;
                     }
-                    html += `</div>`; spaceBlock.innerHTML = html; spacesDetailsContainer.appendChild(spaceBlock);
+                    
+                    html += `</tbody></table>`;
+                    spaceBlock.innerHTML = html; 
+                    spacesDetailsContainer.appendChild(spaceBlock);
                 });
                 
                 triggerPDFGeneration('invoice-internal', `نسخة_الورشة_${proj.name}`);
@@ -1217,8 +1271,6 @@
 
         function triggerPDFGeneration(elementId, fileName) {
             const element = document.getElementById(elementId);
-            
-            // جعل العنصر مرئياً للمتصفح بداخل النطاق الافتراضي لتوليده كاملاً
             element.style.position = 'relative';
             element.style.left = '0';
             element.style.top = '0';
@@ -1279,3 +1331,4 @@
     </script>
 </body>
 </html>
+
