@@ -299,12 +299,17 @@
             background: #fdfdfd;
         }
 
-        #invoice-customer, #invoice-internal {
-            display: none;
-            width: 100%;
-            padding: 30px;
-            background: white;
-            color: black;
+        /* حاويات فواتير الطباعة المخفية هيدروليكياً خارج العرض الفعلي */
+        .invoice-print-container {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 210mm;
+            background: #ffffff;
+            color: #000000;
+            padding: 20mm;
+            box-sizing: border-box;
+            direction: rtl;
         }
 
         .invoice-header {
@@ -325,7 +330,7 @@
             border: 1px solid #ddd;
             padding: 10px;
             text-align: right;
-            font-size: 12px;
+            font-size: 13px;
             color: #000;
         }
 
@@ -338,7 +343,7 @@
             text-align: center;
             border-top: 1px solid #ddd;
             padding-top: 15px;
-            font-size: 12px;
+            font-size: 13px;
         }
         
         .alert-info-wa {
@@ -363,9 +368,10 @@
         }
 
         .internal-canvas-preview-box img {
-            width: 100%;
+            max-width: 100%;
             height: auto;
             display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -438,7 +444,7 @@
         <div id="screen-new-space" class="screen">
             <h2>إضافة مساحة جديدة</h2>
             
-            <label>1) اختر المنتجات المطلوبة in هذه المساحة:</label>
+            <label>1) اختر المنتجات المطلوبة في هذه المساحة:</label>
             <div class="product-selector">
                 <div class="product-box" id="p-box-carpet" onclick="toggleProductSelection('carpet')">سجاد</div>
                 <div class="product-box" id="p-box-musnad" onclick="toggleProductSelection('musnad')">مساند</div>
@@ -499,7 +505,8 @@
         </div>
     </main>
 
-    <div id="invoice-customer">
+    <!-- الفواتير المخفية والمعدة للطباعة بدقة وبدون اقتصاص للتفاصيل -->
+    <div id="invoice-customer" class="invoice-print-container">
         <div class="invoice-header">
             <h2 style="color: #000; font-size: 24px; margin-bottom: 5px;">سالفورد للأثاث والمفروشات</h2>
             <p style="font-size: 14px; color: #555;">الضجيج | مجمع علي عبدالوهاب | سالفورد</p>
@@ -527,8 +534,7 @@
         </div>
     </div>
 
-    <!-- نسخة الإدارة والورشة الفنية الفوقية المخطط -->
-    <div id="invoice-internal">
+    <div id="invoice-internal" class="invoice-print-container">
         <div class="invoice-header" style="border-bottom-color: #000; padding-bottom: 8px; margin-bottom: 10px;">
             <h2 style="font-size: 22px; color: #000;">نسخة الإدارة الفنية والورشة (تفصيلية كاملة)</h2>
         </div>
@@ -541,7 +547,6 @@
         </div>
         
         <div id="inv-int-top-canvas-area"></div>
-        
         <div id="inv-int-spaces-details"></div>
 
         <h3 style="text-align: left; margin-top: 25px; border-top: 3px double #000; padding-top: 10px; font-size: 18px; color: #000;">الإجمالي الكلي المستحق للطلب: <span id="inv-int-total"></span> د.ك</h3>
@@ -697,7 +702,7 @@
         function proceedToSpaceDetails() {
             const hasSelection = Object.values(selectedProducts).some(v => v);
             if(!hasSelection) {
-                alert('الرجاء تحديد منتج واحد على الأقل!');
+                alert('الرجاء تحديد منتج واحد على الألق!');
                 return;
             }
             if(selectedProducts.musnad) {
@@ -874,22 +879,8 @@
             return { x: e.clientX - rect.left, y: e.clientY - rect.top };
         }
 
-        function pointToLineDistance(p, p1, p2) {
-            let A = p.x - p1.x; let B = p.y - p1.y; let C = p2.x - p1.x; let D = p2.y - p1.y;
-            let dot = A * C + B * D; let len_sq = C * C + D * D;
-            let param = -1;
-            if (len_sq != 0) param = dot / len_sq;
-            let xx, yy;
-            if (param < 0) { xx = p1.x; yy = p1.y; }
-            else if (param > 1) { xx = p2.x; yy = p2.y; }
-            else { xx = p1.x + param * C; yy = p1.y + param * D; }
-            let dx = p.x - xx; let dy = p.y - yy;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        // دالة الممحاة المحدثة: تفكيك الخطوط ومسح النقاط القريبة فقط من اللمسة
         function handleEraserAction(pt) {
-            let eraseRadius = 15; // قطر المسح حول الإصبع
+            let eraseRadius = 15; 
             let newLines = [];
 
             freeDrawLines.forEach(line => {
@@ -898,13 +889,11 @@
 
                 for (let i = 0; i < line.length; i++) {
                     let pointInLine = line[i];
-                    // حساب المسافة بين النقطة الحالية في الخط ومكان لمسة الإصبع
                     let dist = Math.sqrt(Math.pow(pointInLine.x - pt.x, 2) + Math.pow(pointInLine.y - pt.y, 2));
 
                     if (dist > eraseRadius) {
                         currentSubLine.push(pointInLine);
                     } else {
-                        // إذا كانت النقطة قريبة جداً يتم التخلي عنها (مسحها) ويقسم الخط هنا
                         if (currentSubLine.length > 0) {
                             newLines.push(currentSubLine);
                             currentSubLine = [];
@@ -967,7 +956,6 @@
                 redrawCanvas();
             } 
             else if (canvasMode === 'erase') {
-                // تفعيل المسح المستمر مع سحب الإصبع على الشاشة أو الماوس
                 if (e.buttons === 1 || (e.type === 'touchmove')) {
                     handleEraserAction(pt);
                 }
@@ -1059,10 +1047,11 @@
             });
         }
 
-        function generateStaticCanvasImage() {
+        // تحسين دالة تصدير المخطط بجودة عالية تمنع التداخل البرمجي داخل الـ PDF
+        function generateStaticCanvasImage(savedLines, savedLabels) {
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = canvas.width * 2.5;
-            tempCanvas.height = canvas.height * 2.5;
+            tempCanvas.width = 700;
+            tempCanvas.height = 350;
             const tCtx = tempCanvas.getContext('2d');
             
             tCtx.fillStyle = '#ffffff';
@@ -1072,24 +1061,30 @@
             for(let i=0; i<tempCanvas.width; i+=50) { tCtx.beginPath(); tCtx.moveTo(i, 0); tCtx.lineTo(i, tempCanvas.height); tCtx.stroke(); }
             for(let j=0; j<tempCanvas.height; j+=50) { tCtx.beginPath(); tCtx.moveTo(0, j); tCtx.lineTo(tempCanvas.width, j); tCtx.stroke(); }
 
-            tCtx.strokeStyle = '#000000'; tCtx.lineWidth = 6; tCtx.lineCap = 'round'; tCtx.lineJoin = 'round';
-            freeDrawLines.forEach(line => {
+            tCtx.strokeStyle = '#000000'; tCtx.lineWidth = 5; tCtx.lineCap = 'round'; tCtx.lineJoin = 'round';
+            
+            let scaleX = canvas && canvas.width ? (700 / canvas.width) : 2.0;
+            let scaleY = canvas && canvas.height ? (350 / canvas.height) : 2.0;
+
+            savedLines.forEach(line => {
                 if(line.length < 1) return;
-                tCtx.beginPath(); tCtx.moveTo(line[0].x * 2.5, line[0].y * 2.5);
-                for(let k=1; k<line.length; k++) { tCtx.lineTo(line[k].x * 2.5, line[k].y * 2.5); }
+                tCtx.beginPath(); tCtx.moveTo(line[0].x * scaleX, line[0].y * scaleY);
+                for(let k=1; k<line.length; k++) { tCtx.lineTo(line[k].x * scaleX, line[k].y * scaleY); }
                 tCtx.stroke();
             });
 
-            sizeLabels.forEach((el) => {
-                tCtx.fillStyle = '#ffffff'; tCtx.fillRect(el.x * 2.5, el.y * 2.5, el.w * 2.5, el.h * 2.5);
-                tCtx.strokeStyle = '#27ae60'; tCtx.lineWidth = 4; tCtx.strokeRect(el.x * 2.5, el.y * 2.5, el.w * 2.5, el.h * 2.5);
+            savedLabels.forEach((el) => {
+                let rx = el.x * scaleX; let ry = el.y * scaleY;
+                let rw = el.w * scaleX; let rh = el.h * scaleY;
+                tCtx.fillStyle = '#ffffff'; tCtx.fillRect(rx, ry, rw, rh);
+                tCtx.strokeStyle = '#27ae60'; tCtx.lineWidth = 3; tCtx.strokeRect(rx, ry, rw, rh);
                 
                 tCtx.fillStyle = '#27ae60'; 
-                tCtx.font = 'bold 22px Tajawal, sans-serif'; 
+                tCtx.font = 'bold 18px Tajawal, sans-serif'; 
                 tCtx.textAlign = 'center';
                 tCtx.textBaseline = 'middle';
                 tCtx.direction = 'rtl';
-                tCtx.fillText(el.text, (el.x + el.w/2) * 2.5, (el.y + el.h/2) * 2.5 + 2);
+                tCtx.fillText(el.text, rx + rw/2, ry + rh/2 + 2);
             });
             
             return tempCanvas.toDataURL('image/png');
@@ -1139,6 +1134,7 @@
 
         function closeSpaceScreen() { navigate('screen-project-details'); }
 
+        // تعديل دالة التصدير بالكامل لحماية مصفوفات المخطط وعرض كل التفاصيل الفنية والأسعار
         function exportPDF(target) {
             const proj = projects.find(p => p.id === currentProjectId);
             let totalSum = 0; proj.spaces.forEach(s => totalSum += Number(s.totalPrice || 0));
@@ -1148,12 +1144,14 @@
                 document.getElementById('inv-cust-date').innerText = proj.date;
                 document.getElementById('inv-cust-name').innerText = proj.name;
                 const tbody = document.querySelector('#inv-cust-table tbody'); tbody.innerHTML = '';
+                
                 proj.spaces.forEach(s => {
                     let descParts = [];
-                    if(s.products.carpet) descParts.push(`سجاد ومفروشات`);
+                    if(s.products.carpet) descParts.push(`سجاد ومفروشات (مساحة: ${s.products.carpet.length}×${s.products.carpet.width}م)`);
                     if(s.products.musnad) descParts.push(`تفصيل طقم مساند ديوانية`);
                     if(s.products.curtain) descParts.push(`تفصيل ستائر مخصصة (${s.products.curtain.length} نافذة)`);
                     if(s.products.sofa) descParts.push(`طقم كنب مخصص`);
+                    
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td><strong>${s.type}</strong><br><span style="font-size:11px; color:#555;">${s.customName || ''}</span></td><td>${descParts.join(' + ')}</td><td>${s.totalPrice} د.ك</td>`;
                     tbody.appendChild(tr);
@@ -1176,11 +1174,11 @@
                 spacesDetailsContainer.innerHTML = '';
 
                 proj.spaces.forEach((s) => {
-                    if((s.savedFreeDrawLines && s.savedFreeDrawLines.length > 0) || (s.savedSizeLabels && s.savedSizeLabels.length > 0)) {
-                        freeDrawLines = s.savedFreeDrawLines || [];
-                        sizeLabels = s.savedSizeLabels || [];
-                        const imgData = generateStaticCanvasImage();
-                        
+                    let sLines = s.savedFreeDrawLines || [];
+                    let sLabels = s.savedSizeLabels || [];
+                    
+                    if(sLines.length > 0 || sLabels.length > 0) {
+                        const imgData = generateStaticCanvasImage(sLines, sLabels);
                         const previewBlock = document.createElement('div');
                         previewBlock.className = 'internal-canvas-preview-box';
                         previewBlock.innerHTML = `
@@ -1191,16 +1189,23 @@
                     }
                     
                     const spaceBlock = document.createElement('div');
-                    spaceBlock.style.border = '1px solid #ccc'; spaceBlock.style.padding = '10px'; spaceBlock.style.marginBottom = '10px'; spaceBlock.style.borderRadius = '5px';
-                    let html = `<h4 style="font-size:13px; color:#000;">📋 مواصفات: ${s.type} [${s.customName || 'عامة'}] - السعر: ${s.totalPrice} د.ك</h4>`;
-                    html += `<div style="font-size:12px; margin-top: 5px; color:#444; line-height:1.5;">`;
-                    if(s.products.carpet) html += `<p>🔹 <strong>السجاد:</strong> ${s.products.carpet.length}×${s.products.carpet.width}م | المسطرة: ${s.products.carpet.pattern} | اللون: ${s.products.carpet.color} | السعر: ${s.products.carpet.price} د.ك</p>`;
-                    if(s.products.musnad) html += `<p>🔹 <strong>المساند:</strong> الخام: ${s.products.musnad.pattern} | اللون: ${s.products.musnad.color} | السعر: ${s.products.musnad.price} د.ك</p>`;
-                    if(s.products.sofa) html += `<p>🔹 <strong>الكنب:</strong> ${s.products.sofa.desc} | السعر: ${s.products.sofa.price} د.ك</p>`;
+                    spaceBlock.style.border = '1px solid #000'; spaceBlock.style.padding = '12px'; spaceBlock.style.marginBottom = '12px'; spaceBlock.style.borderRadius = '6px'; spaceBlock.style.backgroundColor = '#fafafa';
+                    let html = `<h4 style="font-size:14px; color:#000; border-bottom:1px solid #ccc; padding-bottom:4px;">📋 مواصفات: ${s.type} [${s.customName || 'عامة'}] - السعر الفرعي: ${s.totalPrice} د.ك</h4>`;
+                    html += `<div style="font-size:13px; margin-top: 8px; color:#111; line-height:1.6;">`;
+                    
+                    if(s.products.carpet) {
+                        html += `<p style="margin-bottom:4px;">🔹 <strong>السجاد:</strong> المقاس ${s.products.carpet.length} × ${s.products.carpet.width} م | المسطرة: ${s.products.carpet.pattern || '-'} | اللون: ${s.products.carpet.color || '-'} | السعر: ${s.products.carpet.price} د.ك</p>`;
+                    }
+                    if(s.products.musnad) {
+                        html += `<p style="margin-bottom:4px;">🔹 <strong>المساند:</strong> مسطرة الخام: ${s.products.musnad.pattern || '-'} | رقم اللون: ${s.products.musnad.color || '-'} | السعر: ${s.products.musnad.price} د.ك</p>`;
+                    }
+                    if(s.products.sofa) {
+                        html += `<p style="margin-bottom:4px;">🔹 <strong>الكنب:</strong> الوصف: ${s.products.sofa.desc || '-'} | السعر: ${s.products.sofa.price} د.ك</p>`;
+                    }
                     if(s.products.curtain) {
-                        html += `<p>🔹 <strong>الستائر:</strong></p>`;
+                        html += `<p style="font-weight:bold; margin-top:4px;">🔹 الستائر المخصصة:</p>`;
                         s.products.curtain.forEach((curt, i) => {
-                            html += `<p style="padding-right:15px;">- ستارة ${i+1}: نوع ${curt.type} | عرض ${curt.width}م × ارتفاع ${curt.height}م | السعر: ${curt.price} د.ك</p>`;
+                            html += `<p style="padding-right:15px; margin-bottom:2px;">- ستارة ${i+1}: نوع [${curt.type}] | العرض ${curt.width}م × الارتفاع ${curt.height}م | السعر: ${curt.price} د.ك</p>`;
                         });
                     }
                     html += `</div>`; spaceBlock.innerHTML = html; spacesDetailsContainer.appendChild(spaceBlock);
@@ -1212,19 +1217,26 @@
 
         function triggerPDFGeneration(elementId, fileName) {
             const element = document.getElementById(elementId);
-            element.style.display = 'block';
+            
+            // جعل العنصر مرئياً للمتصفح بداخل النطاق الافتراضي لتوليده كاملاً
+            element.style.position = 'relative';
+            element.style.left = '0';
+            element.style.top = '0';
             
             const opt = { 
-                margin: 8, 
+                margin: [10, 10, 10, 10], 
                 filename: `${fileName}.pdf`, 
                 image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2.5, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+                html2canvas: { scale: 2.0, useCORS: true, logging: false, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
             
             if (typeof html2pdf !== 'undefined') {
                 html2pdf().set(opt).from(element).save().then(() => {
-                    element.style.display = 'none';
+                    element.style.position = 'absolute';
+                    element.style.left = '-9999px';
+                    element.style.top = '-9999px';
                 }).catch((err) => {
                     fallbackPrint(element);
                 });
@@ -1241,7 +1253,10 @@
             printWindow.document.write(element.innerHTML);
             printWindow.document.write('</body></html>');
             printWindow.document.close();
-            element.style.display = 'none';
+            
+            element.style.position = 'absolute';
+            element.style.left = '-9999px';
+            element.style.top = '-9999px';
             setTimeout(() => { printWindow.print(); }, 500);
         }
 
@@ -1264,4 +1279,3 @@
     </script>
 </body>
 </html>
-
