@@ -1,490 +1,1258 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>الأمان للسياحة والسفر</title>
-<meta name="description" content="الأمان للسياحة والسفر — حجز طيران وتأشيرات. أرسل تفاصيل رحلتك عبر واتساب وسنرد عليك بالتأكيد." />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --navy-0:#081325;
-    --navy-1:#0b1a30;
-    --navy-2:#102544;
-    --glass:rgba(20,38,64,.72);
-    --glass-line:rgba(232,196,98,.22);
-    --gold:#e8c062;
-    --gold-soft:#f1d27f;
-    --gold-deep:#cf9f34;
-    --ink:#f6f8fc;
-    --muted:#93a6c2;
-    --muted-2:#6c809c;
-    --wa:#25d366;
-    --wa-deep:#128c4a;
-    --radius:20px;
-    --shadow:0 24px 60px -24px rgba(0,0,0,.7);
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{
-    font-family:"Tajawal",system-ui,sans-serif;
-    color:var(--ink);
-    background:
-      radial-gradient(1200px 700px at 80% -10%, rgba(232,196,98,.10), transparent 60%),
-      radial-gradient(900px 600px at -10% 20%, rgba(45,90,150,.18), transparent 60%),
-      linear-gradient(170deg,var(--navy-1) 0%, var(--navy-0) 100%);
-    background-attachment:fixed;
-    min-height:100vh;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-  /* faint blueprint grid like the brand ad */
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
-    background-image:
-      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-    background-size:46px 46px;
-    mask-image:radial-gradient(circle at 50% 30%, #000 30%, transparent 85%);
-  }
-  .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 18px}
-  .num{font-family:"Poppins",sans-serif;font-feature-settings:"tnum";direction:ltr;unicode-bidi:isolate}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مخطط سالفورد للأثاث</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-  /* ---------- Header ---------- */
-  header{padding:26px 0 8px}
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .mark{
-    width:54px;height:54px;border-radius:15px;flex:none;
-    background:linear-gradient(135deg,var(--gold-soft),var(--gold-deep));
-    display:grid;place-items:center;
-    box-shadow:0 10px 26px -8px rgba(232,196,98,.55);
-  }
-  .mark svg{width:30px;height:30px;color:var(--navy-0)}
-  .brand h1{font-size:1.42rem;font-weight:900;letter-spacing:-.4px;line-height:1.15}
-  .brand .sub{font-size:.78rem;color:var(--gold);font-weight:700;margin-top:2px}
-  .pill{
-    font-size:.74rem;font-weight:700;color:var(--gold);
-    border:1px solid var(--glass-line);background:rgba(232,196,98,.07);
-    padding:7px 13px;border-radius:999px;white-space:nowrap;
-  }
+    <style>
+        :root {
+            --gold: #C8A96E;
+            --black: #0D0D0D;
+            --dark-gray: #1a1a1a;
+            --light-gray: #f5f5f5;
+            --text-color: #333;
+            --border-color: #ddd;
+        }
 
-  /* ---------- Hero ---------- */
-  .hero{text-align:center;padding:34px 6px 10px}
-  .eyebrow{
-    display:inline-flex;align-items:center;gap:10px;color:var(--muted);
-    font-size:.82rem;font-weight:700;letter-spacing:2px;margin-bottom:16px;
-  }
-  .eyebrow::before,.eyebrow::after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-deep))}
-  .hero h2{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;line-height:1.18;letter-spacing:-1px}
-  .hero h2 b{color:var(--gold)}
-  .hero p{color:var(--muted);max-width:480px;margin:14px auto 0;font-size:1.02rem}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  /* destination chips */
-  .chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:22px 0 4px}
-  .chip{
-    font-size:.85rem;font-weight:700;color:var(--ink);
-    background:var(--glass);border:1px solid rgba(255,255,255,.06);
-    padding:8px 16px;border-radius:999px;
-  }
-  .chip .code{color:var(--gold);font-family:"Poppins";font-size:.72rem;margin-inline-start:6px}
+        body {
+            background-color: var(--black);
+            color: #fff;
+            max-width: 450px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-  /* ---------- Boarding-pass form (signature) ---------- */
-  .pass{
-    margin:30px 0 18px;background:var(--glass);
-    border:1px solid var(--glass-line);border-radius:24px;
-    box-shadow:var(--shadow);backdrop-filter:blur(14px);
-    overflow:hidden;
-  }
-  .pass-head{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
-    padding:18px 22px;background:linear-gradient(100deg,rgba(232,196,98,.16),rgba(232,196,98,.04));
-    border-bottom:1px dashed var(--glass-line);
-  }
-  .pass-head h3{font-size:1.12rem;font-weight:800}
-  .pass-head .tag{font-size:.74rem;color:var(--gold);font-weight:700}
+        header {
+            background-color: var(--black);
+            border-bottom: 2px solid var(--gold);
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
 
-  .pass-body{padding:22px}
+        .logo-circle {
+            width: 45px;
+            height: 45px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--gold);
+            font-size: 1.1rem;
+        }
 
-  /* trip type segmented */
-  .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:rgba(0,0,0,.25);
-       border:1px solid rgba(255,255,255,.06);padding:5px;border-radius:14px;margin-bottom:20px}
-  .seg button{
-    font-family:inherit;font-size:.92rem;font-weight:700;color:var(--muted);
-    background:transparent;border:0;padding:11px;border-radius:10px;cursor:pointer;transition:.2s;
-  }
-  .seg button[aria-pressed="true"]{background:linear-gradient(135deg,var(--gold-soft),var(--gold-deep));color:var(--navy-0)}
+        header h1 {
+            color: #fff;
+            font-size: 1.3rem;
+        }
 
-  .field{margin-bottom:16px}
-  .field > label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:7px}
-  .control{
-    width:100%;font-family:inherit;font-size:1.02rem;font-weight:500;color:var(--ink);
-    background:rgba(8,18,35,.6);border:1.5px solid rgba(255,255,255,.09);
-    border-radius:13px;padding:14px 15px;transition:border-color .2s, box-shadow .2s;
-  }
-  .control:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(232,196,98,.16)}
-  select.control{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2393a6c2' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
-    background-repeat:no-repeat;background-position:left 15px center;padding-inline-start:38px}
-  .control::placeholder{color:var(--muted-2)}
-  input[type="date"].control{color-scheme:dark}
+        main {
+            flex: 1;
+            padding: 15px;
+            background-color: #fff;
+            color: var(--text-color);
+            border-radius: 20px 20px 0 0;
+            margin-top: 10px;
+        }
 
-  /* route row with swap */
-  .route{display:grid;grid-template-columns:1fr 46px 1fr;gap:10px;align-items:end}
-  .swap{
-    height:50px;width:46px;align-self:end;border-radius:13px;cursor:pointer;
-    background:rgba(232,196,98,.1);border:1.5px solid var(--glass-line);color:var(--gold);
-    display:grid;place-items:center;transition:.2s;
-  }
-  .swap:hover{background:rgba(232,196,98,.2);transform:rotate(180deg)}
-  .swap svg{width:20px;height:20px}
+        .screen {
+            display: none;
+        }
 
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .screen.active {
+            display: block;
+        }
 
-  /* passenger stepper */
-  .stepper{display:flex;align-items:center;justify-content:space-between;
-    background:rgba(8,18,35,.6);border:1.5px solid rgba(255,255,255,.09);border-radius:13px;padding:7px 9px}
-  .stepper button{width:40px;height:40px;border-radius:10px;border:0;cursor:pointer;
-    background:rgba(232,196,98,.12);color:var(--gold);font-size:1.4rem;font-weight:700;line-height:1;transition:.15s}
-  .stepper button:hover{background:rgba(232,196,98,.24)}
-  .stepper .count{font-family:"Poppins";font-weight:700;font-size:1.1rem}
+        h2 {
+            margin-bottom: 15px;
+            color: var(--black);
+            border-right: 4px solid var(--gold);
+            padding-right: 8px;
+            font-size: 1.2rem;
+        }
 
-  .err{color:#ff9a8b;font-size:.8rem;font-weight:700;margin-top:7px;display:none}
-  .field.invalid .control{border-color:#ff7a66}
-  .field.invalid .err{display:block}
+        h3 {
+            margin: 15px 0 10px 0;
+            color: var(--black);
+            font-size: 1.05rem;
+        }
 
-  /* live preview strip */
-  .preview{
-    margin:6px 0 20px;border:1px dashed var(--glass-line);border-radius:16px;padding:16px;
-    background:rgba(8,18,35,.45);display:flex;align-items:center;justify-content:space-between;gap:8px;
-  }
-  .stop{text-align:center;min-width:64px}
-  .stop .c{font-family:"Poppins";font-weight:700;font-size:1.5rem;color:var(--ink);line-height:1}
-  .stop .n{font-size:.78rem;color:var(--muted);margin-top:4px}
-  .path{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--gold)}
-  .path .line{width:100%;height:0;border-top:2px dotted var(--gold-deep);position:relative}
-  .path svg{width:22px;height:22px}
-  .path .when{font-size:.74rem;color:var(--muted);font-weight:700}
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-  /* submit */
-  .send{
-    width:100%;font-family:inherit;font-size:1.12rem;font-weight:800;cursor:pointer;
-    color:#062c16;background:linear-gradient(135deg,#33e07a,var(--wa));
-    border:0;border-radius:15px;padding:17px;display:flex;align-items:center;justify-content:center;gap:11px;
-    box-shadow:0 16px 34px -14px rgba(37,211,102,.7);transition:transform .15s, box-shadow .2s;
-  }
-  .send:hover{transform:translateY(-2px);box-shadow:0 20px 40px -14px rgba(37,211,102,.8)}
-  .send:active{transform:translateY(0)}
-  .send svg{width:24px;height:24px}
-  .hint{text-align:center;color:var(--muted-2);font-size:.8rem;margin-top:12px}
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--black);
+        }
 
-  /* ---------- Services ---------- */
-  .services{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:34px 0}
-  .svc{background:var(--glass);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:20px 14px;text-align:center}
-  .svc .ic{width:50px;height:50px;margin:0 auto 12px;border-radius:14px;display:grid;place-items:center;
-    background:rgba(232,196,98,.12);color:var(--gold)}
-  .svc .ic svg{width:26px;height:26px}
-  .svc h4{font-size:1rem;font-weight:800;margin-bottom:4px}
-  .svc p{font-size:.82rem;color:var(--muted)}
+        input[type="text"], input[type="number"], input[type="tel"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+            background-color: #fff;
+            color: #000;
+        }
 
-  /* ---------- Contact ---------- */
-  .contact{background:var(--glass);border:1px solid var(--glass-line);border-radius:22px;
-    padding:24px;text-align:center;margin-bottom:30px}
-  .contact h3{font-size:1.3rem;font-weight:900;margin-bottom:6px}
-  .contact p{color:var(--muted);font-size:.95rem;margin-bottom:18px}
-  .contact .row{display:flex;flex-direction:column;gap:10px;align-items:center}
-  .wa-btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;
-    color:#062c16;background:linear-gradient(135deg,#33e07a,var(--wa));padding:14px 26px;border-radius:14px;
-    box-shadow:0 14px 30px -14px rgba(37,211,102,.7)}
-  .wa-btn svg{width:22px;height:22px}
-  .meta{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:center;color:var(--muted);font-size:.86rem;margin-top:16px}
-  .meta span{display:inline-flex;align-items:center;gap:7px}
-  .meta svg{width:16px;height:16px;color:var(--gold)}
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--gold);
+        }
 
-  footer{text-align:center;color:var(--muted-2);font-size:.82rem;padding:10px 0 40px}
-  footer b{color:var(--gold)}
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
 
-  /* floating WhatsApp */
-  .float{position:fixed;inset-inline-start:18px;bottom:18px;z-index:30;width:58px;height:58px;border-radius:50%;
-    background:linear-gradient(135deg,#33e07a,var(--wa));display:grid;place-items:center;
-    box-shadow:0 12px 30px -8px rgba(37,211,102,.7);text-decoration:none;animation:bob 3s ease-in-out infinite}
-  .float svg{width:30px;height:30px;color:#fff}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+        .btn-primary {
+            background-color: var(--black);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+        }
 
-  .reveal{opacity:0;transform:translateY(16px);animation:rise .7s ease forwards}
-  @keyframes rise{to{opacity:1;transform:none}}
+        .btn-primary:active {
+            background-color: var(--gold);
+            color: var(--black);
+        }
 
-  @media(max-width:560px){
-    .services{grid-template-columns:1fr;}
-    .svc{display:flex;align-items:center;text-align:start;gap:14px;padding:16px}
-    .svc .ic{margin:0}
-    .topbar{align-items:flex-start}
-    .pill{align-self:center}
-  }
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-    .swap:hover{transform:none}
-  }
-</style>
+        .btn-secondary {
+            background-color: var(--light-gray);
+            color: var(--black);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-danger {
+            background-color: #d9534f;
+            color: white;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin: 0 0 5px 0;
+            color: var(--black);
+        }
+
+        .card p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .card .total-price {
+            font-weight: bold;
+            color: var(--black);
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        .product-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .product-box {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            background: #fafafa;
+            transition: all 0.2s;
+        }
+
+        .product-box.selected {
+            border-color: var(--gold);
+            background-color: rgba(200, 169, 110, 0.15);
+            color: var(--black);
+        }
+
+        /* حاوية الرسم المستقرة والضرورية لمنع حركة متصفح الجوال أثناء الرسم بالايرباك */
+        .canvas-container {
+            width: 100%;
+            background: #fafafa;
+            border: 2px dashed var(--gold);
+            border-radius: 10px;
+            position: relative;
+            margin-bottom: 15px;
+            overflow: hidden;
+            touch-action: none; 
+            height: 280px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        .canvas-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* وضعية حقول مدخلات المقاس والأبواب الحية المدمجة هندسياً */
+        .wall-input-container {
+            position: absolute;
+            background: white;
+            border: 1px solid var(--gold);
+            border-radius: 6px;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            z-index: 10;
+            transform: translate(-50%, -50%); /* للمحاذاة المركزية المثالية */
+        }
+
+        .wall-input-container input {
+            width: 50px;
+            padding: 4px;
+            font-size: 12px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-door {
+            background: #eee;
+            border: none;
+            padding: 3px 5px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-door.has-door {
+            background: #d9534f;
+            color: white;
+        }
+
+        .curtain-item {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #fdfdfd;
+        }
+
+        /* الفواتير المخفية المعدة للتصدير السلس كـ PDF */
+        #invoice-customer, #invoice-internal {
+            display: none;
+            width: 100%;
+            padding: 30px;
+            background: white;
+            color: black;
+        }
+
+        .invoice-header {
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-table th, .invoice-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: right;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .invoice-table th {
+            background-color: #f5f5f5;
+        }
+
+        .invoice-footer {
+            margin-top: 30px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            font-size: 12px;
+        }
+        
+        .alert-info-wa {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            color: #0050b3;
+            line-height: 1.4;
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <div class="topbar">
-      <div class="brand">
-        <div class="mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>
+    <header>
+        <div class="logo-circle">SF</div>
+        <h1>مخطط سالفورد</h1>
+    </header>
+
+    <main>
+        <div id="screen-main" class="screen active">
+            <h2>المشاريع الحالية</h2>
+            <div id="projects-list"></div>
+            <button class="btn btn-primary" onclick="navigate('screen-new-project')">+ مشروع جديد</button>
         </div>
-        <div>
-          <h1>الأمان للسياحة والسفر</h1>
-          <div class="sub">سياحة وسفر · حجوزات طيران</div>
+
+        <div id="screen-new-project" class="screen">
+            <h2>إنشاء مشروع جديد</h2>
+            <div class="form-group">
+                <label>اسم الزبون <span style="color:red">*</span></label>
+                <input type="text" id="cust-name" placeholder="أدخل اسم الزبون الكامل">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف (اختياري)</label>
+                <input type="tel" id="cust-phone" placeholder="965xxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>العنوان (اختياري)</label>
+                <input type="text" id="cust-address" placeholder="المنطقة، القطعة، الجادة، البيت...">
+            </div>
+            <button class="btn btn-primary" onclick="saveNewProject()">بدء المشروع</button>
+            <button class="btn btn-secondary" onclick="navigate('screen-main')">إلغاء</button>
         </div>
-      </div>
-      <span class="pill">★ مكتب سفر معتمد</span>
-    </div>
-  </header>
 
-  <section class="hero reveal">
-    <span class="eyebrow">احجز رحلتك بثقة</span>
-    <h2>أخبرنا بوجهتك<br><b>ونتكفّل بالباقي</b></h2>
-    <p>اختر مدينة المغادرة والوصول وموعد رحلتك، وأرسل التفاصيل إلينا عبر واتساب — وسنعود إليك بأفضل عرض.</p>
-    <div class="chips" aria-label="الوجهات المتاحة">
-      <span class="chip">دمشق<span class="code">DAM</span></span>
-      <span class="chip">الكويت<span class="code">KWI</span></span>
-      <span class="chip">بيروت<span class="code">BEY</span></span>
-      <span class="chip">عمّان<span class="code">AMM</span></span>
-    </div>
-  </section>
+        <div id="screen-project-details" class="screen">
+            <h2 id="view-project-title">تفاصيل المشروع</h2>
+            <div id="project-info-summary" style="margin-bottom: 15px; font-size: 0.9rem; color: #555;"></div>
+            
+            <h3>المساحات المضافة</h3>
+            <div id="spaces-list" style="margin: 10px 0;"></div>
 
-  <!-- ====== Inquiry form ====== -->
-  <section class="pass reveal" style="animation-delay:.1s" aria-label="طلب حجز رحلة">
-    <div class="pass-head">
-      <h3>طلب رحلة</h3>
-      <span class="tag">بطاقة سفر · الأمان</span>
-    </div>
-    <div class="pass-body">
+            <button class="btn btn-primary" onclick="openNewSpace()">+ إضافة مساحة (غرفة/ديوانية)</button>
+            
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border-color);">
+            
+            <h2>موعد التسليم والملاحظات</h2>
+            <div class="form-group">
+                <label>موعد التسليم (داخلي فقط)</label>
+                <input type="text" id="proj-delivery" placeholder="مثال: بعد أسبوعين / التاريخ">
+            </div>
+            <div class="form-group">
+                <label>ملاحظات عامة (تظهر في الفاتورتين)</label>
+                <textarea id="proj-notes" rows="3" placeholder="أي ملاحظات أو شروط خاصة لطلبية الفني والزبون..."></textarea>
+            </div>
 
-      <div class="seg" role="group" aria-label="نوع الرحلة">
-        <button type="button" id="tOne" aria-pressed="true">ذهاب فقط</button>
-        <button type="button" id="tRound" aria-pressed="false">ذهاب وعودة</button>
-      </div>
-
-      <div class="field">
-        <div class="route">
-          <div>
-            <label for="from">من (المغادرة)</label>
-            <select id="from" class="control">
-              <option value="" disabled selected>اختر المدينة</option>
-              <option value="دمشق|DAM">دمشق</option>
-              <option value="الكويت|KWI">الكويت</option>
-              <option value="بيروت|BEY">بيروت</option>
-              <option value="عمّان|AMM">عمّان</option>
-            </select>
-          </div>
-          <button type="button" class="swap" id="swap" title="تبديل" aria-label="تبديل المدينتين">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg>
-          </button>
-          <div>
-            <label for="to">إلى (الوصول)</label>
-            <select id="to" class="control">
-              <option value="" disabled selected>اختر المدينة</option>
-              <option value="دمشق|DAM">دمشق</option>
-              <option value="الكويت|KWI">الكويت</option>
-              <option value="بيروت|BEY">بيروت</option>
-              <option value="عمّان|AMM">عمّان</option>
-            </select>
-          </div>
+            <button class="btn btn-primary" onclick="exportPDF('customer')">تحميل فاتورة الزبون PDF</button>
+            <button class="btn btn-primary" onclick="exportPDF('internal')">تحميل نسختي الداخلية PDF</button>
+            
+            <div class="alert-info-wa">
+                💡 تذكير: قيود تطبيق واتساب لا تسمح بإرفاق ملفات الـ PDF تلقائياً، يرجى تحميل الفاتورة للجهاز أولاً ثم إرفاقها يدوياً للمحادثة الحية.
+            </div>
+            <button class="btn btn-secondary" style="background:#25D366; color:white; border:none;" onclick="shareWhatsApp('customer')">إرسال الملخص للزبون عبر واتساب</button>
+            <button class="btn btn-secondary" style="background:#075E54; color:white; border:none;" onclick="shareWhatsApp('store')">إرسال النسخة لإدارة سالفورد</button>
+            
+            <button class="btn btn-danger" style="margin-top: 25px;" onclick="deleteCurrentProject()">حذف هذا المشروع بالكامل</button>
+            <button class="btn btn-secondary" onclick="navigate('screen-main')">رجوع للرئيسية</button>
         </div>
-        <div class="err" id="routeErr">اختر مدينتين مختلفتين للمغادرة والوصول.</div>
-      </div>
 
-      <div class="two">
-        <div class="field" style="margin-bottom:0">
-          <label for="depart">تاريخ الذهاب</label>
-          <input type="date" id="depart" class="control" />
-          <div class="err" id="departErr">حدّد تاريخ الذهاب.</div>
+        <div id="screen-new-space" class="screen">
+            <h2>إضافة مساحة جديدة</h2>
+            
+            <label>1) اختر المنتجات المطلوبة في هذه المساحة:</label>
+            <div class="product-selector">
+                <div class="product-box" id="p-box-carpet" onclick="toggleProductSelection('carpet')">سجاد</div>
+                <div class="product-box" id="p-box-musnad" onclick="toggleProductSelection('musnad')">مساند</div>
+                <div class="product-box" id="p-box-curtain" onclick="toggleProductSelection('curtain')">ستائر</div>
+                <div class="product-box" id="p-box-sofa" onclick="toggleProductSelection('sofa')">كنب</div>
+            </div>
+
+            <div class="form-group">
+                <label>2) نوع المكان:</label>
+                <select id="space-type">
+                    <option value="ديوانية">ديوانية</option>
+                    <option value="غرفة">غرفة</option>
+                    <option value="صالة">صالة</option>
+                    <option value="ممر">ممر</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>اسم مخصص (اختياري):</label>
+                <input type="text" id="space-custom-name" placeholder="مثال: الديوانية الرئيسية">
+            </div>
+
+            <button class="btn btn-primary" onclick="proceedToSpaceDetails()">التالي (تفاصيل المنتجات)</button>
+            <button class="btn btn-secondary" onclick="closeSpaceScreen()">إلغاء</button>
         </div>
-        <div class="field" id="returnWrap" style="margin-bottom:0;display:none">
-          <label for="ret">تاريخ العودة</label>
-          <input type="date" id="ret" class="control" />
-          <div class="err" id="retErr">حدّد تاريخ العودة.</div>
+
+        <div id="screen-space-details" class="screen">
+            <h2 id="space-details-title">تفاصيل المنتجات والمقاسات</h2>
+
+            <div id="section-drawing-tool" style="display:none;">
+                <label style="color:var(--gold); font-weight:bold; margin-bottom:8px;">أداة رسم المساند (اسحب بإصبعك لرسم جدران الغرفة):</label>
+                <div class="canvas-container" id="canvas-wrapper">
+                    <canvas id="drawing-canvas"></canvas>
+                    <div id="wall-labels-container"></div>
+                </div>
+                <div class="canvas-controls">
+                    <button class="btn btn-secondary" style="flex:1;" onclick="undoLastWall()">تراجع ↩</button>
+                    <button class="btn btn-primary" style="flex:1;" onclick="closeDrawingShape()">إنهاء الشكل 🔁</button>
+                </div>
+            </div>
+
+            <div id="products-fields-inputs"></div>
+
+            <button class="btn btn-primary" onclick="saveSpaceToProject()">حفظ المساحة في الطلب</button>
+            <button class="btn btn-secondary" onclick="navigate('screen-new-space')">تعديل الاختيارات</button>
         </div>
-      </div>
+    </main>
 
-      <div class="two" style="margin-top:16px">
-        <div class="field" style="margin-bottom:0">
-          <label for="name">الاسم</label>
-          <input type="text" id="name" class="control" placeholder="اسمك الكريم" />
+    <div id="invoice-customer">
+        <div class="invoice-header">
+            <h2 style="color: #000; font-size: 24px; margin-bottom: 5px;">سالفورد للأثاث والمفروشات</h2>
+            <p style="font-size: 14px; color: #555;">الضجيج | مجمع علي عبدالوهاب | سالفورد</p>
+            <p style="font-size: 14px; color: #555;">هاتف التواصل: 96555943343</p>
+            <br><br>
+            <table style="width:100%; border:none; text-align:right; font-size:13px; line-height:1.8;">
+                <tr><td><strong>رقم الفاتورة المرجعي:</strong> <span id="inv-cust-id"></span></td></tr>
+                <tr><td><strong>التاريخ:</strong> <span id="inv-cust-date"></span></td></tr>
+                <tr><td><strong>السيد / السيدة:</strong> <span id="inv-cust-name"></span></td></tr>
+            </table>
         </div>
-        <div class="field" style="margin-bottom:0">
-          <label>عدد المسافرين</label>
-          <div class="stepper">
-            <button type="button" id="minus" aria-label="إنقاص">−</button>
-            <span class="count num" id="paxCount">1</span>
-            <button type="button" id="plus" aria-label="زيادة">+</button>
-          </div>
+        <table class="invoice-table" id="inv-cust-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">المساحة</th>
+                    <th style="width: 50%;">المنتج والوصف العام</th>
+                    <th style="width: 20%;">السعر الإجمالي</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <h3 style="text-align: left; margin-bottom: 20px; font-size: 18px; color:#000;">الإجمالي الكلي: <span id="inv-cust-total"></span> د.ك</h3>
+        <div id="inv-cust-notes-area" style="margin-top:20px; font-size:13px; border-top:2px solid #ccc; padding-top:10px; line-height:1.5;"></div>
+        <div class="invoice-footer">
+            <p style="font-size: 14px; font-weight: bold;">نشكركم على ثقتكم الغالية باختيار سالفورد للأثاث والمفروشات.</p>
         </div>
-      </div>
+    </div>
 
-      <div class="field" style="margin:16px 0 4px">
-        <label for="notes">ملاحظات (اختياري)</label>
-        <input type="text" id="notes" class="control" placeholder="مثال: تفضيل وقت معيّن أو أمتعة إضافية" />
-      </div>
-
-      <!-- live preview -->
-      <div class="preview" aria-hidden="true">
-        <div class="stop"><div class="c" id="pvFromC">—</div><div class="n" id="pvFromN">المغادرة</div></div>
-        <div class="path">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>
-          <div class="line"></div>
-          <div class="when" id="pvWhen">حدد الموعد</div>
+    <div id="invoice-internal">
+        <div class="invoice-header" style="border-bottom-color: #000;">
+            <h2 style="font-size: 22px; color: #000;">نسخة الإدارة الفنية والورشة (تفصيلية كاملة)</h2>
+            <p style="font-size: 13px; color: #333;">مخطط مقاسات وجدران طلبية الزبون الحقيقية</p>
         </div>
-        <div class="stop"><div class="c" id="pvToC">—</div><div class="n" id="pvToN">الوصول</div></div>
-      </div>
+        <div style="font-size: 14px; margin-bottom: 20px; line-height: 1.8; border-bottom: 1px solid #ccc; padding-bottom:10px;">
+            <p><strong>اسم الزبون الكامل:</strong> <span id="inv-int-name"></span></p>
+            <p><strong>رقم هاتف الاتصال:</strong> <span id="inv-int-phone"></span></p>
+            <p><strong>العنوان والتفاصيل:</strong> <span id="inv-int-address"></span></p>
+            <p><strong>تاريخ الإنشاء:</strong> <span id="inv-int-date"></span></p>
+            <p style="color: #d9534f; font-weight: bold; font-size: 15px;"><strong>موعد التسليم المتفق عليه:</strong> <span id="inv-int-delivery"></span></p>
+        </div>
+        
+        <div id="inv-int-spaces-details"></div>
 
-      <button class="send" id="send">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.999zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-        إرسال الطلب عبر واتساب
-      </button>
-      <p class="hint">سيُفتح واتساب برسالة جاهزة تتضمّن كل تفاصيل رحلتك.</p>
-
+        <h3 style="text-align: left; margin-top: 25px; border-top: 3px double #000; padding-top: 10px; font-size: 18px; color: #000;">الإجمالي الكلي المستحق للطلب: <span id="inv-int-total"></span> د.ك</h3>
+        <div id="inv-int-notes-area" style="margin-top:20px; background: #f5f5f5; padding: 12px; border:1px solid #999; font-size:13px; line-height:1.5;"></div>
     </div>
-  </section>
 
-  <!-- ====== Services ====== -->
-  <section class="services reveal" style="animation-delay:.15s" aria-label="خدماتنا">
-    <div class="svc">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div>
-      <div><h4>حجز الطيران</h4><p>أفضل الأسعار على رحلات دمشق والكويت وبيروت وعمّان.</p></div>
-    </div>
-    <div class="svc">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div>
-      <div><h4>تأشيرات</h4><p>متابعة ومعالجة طلبات الفيزا خطوة بخطوة.</p></div>
-    </div>
-  </section>
 
-  <!-- ====== Contact ====== -->
-  <section class="contact reveal" style="animation-delay:.2s">
-    <h3>تواصل معنا مباشرة</h3>
-    <p>للحجز والاستفسار عبر الاتصال أو واتساب</p>
-    <div class="row">
-      <a class="wa-btn" id="waDirect" href="#">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.999zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-        واتساب: <span class="num" style="margin-inline-start:6px">+965 5594 3343</span>
-      </a>
-    </div>
-    <div class="meta">
-      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg> طيران · تأشيرات</span>
-    </div>
-  </section>
+    <script>
+        let projects = JSON.parse(localStorage.getItem('salford_projects')) || [];
+        let currentProjectId = null;
+        let selectedProducts = { carpet: false, musnad: false, curtain: false, sofa: false };
+        
+        // جافاسكربت لوحة الرسم الحية
+        let canvas, ctx;
+        let walls = []; 
+        let isDrawing = false;
+        let startPoint = { x: 150, y: 150 };
+        let lastPoint = { x: 150, y: 150 };
+        let currentMousePoint = { x: 150, y: 150 };
 
-  <footer>
-    <p>✈ <b>الأمان للسياحة والسفر</b> — جميع الحقوق محفوظة</p>
-  </footer>
+        function navigate(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0, 0);
+            
+            if(screenId === 'screen-main') {
+                renderProjectsList();
+            }
+        }
 
-</div>
+        window.onload = function() {
+            renderProjectsList();
+            initCanvas();
+        };
 
-<a class="float" id="waFloat" href="#" aria-label="تواصل عبر واتساب">
-  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.477-.999zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-</a>
+        function saveToStorage() {
+            localStorage.setItem('salford_projects', JSON.stringify(projects));
+        }
 
-<script>
-  // ===== Configuration =====
-  var WA_NUMBER = "96555943343"; // الرقم الكويتي للواتساب
-  var WA_PLAIN  = "السلام عليكم، أرغب بالاستفسار عن حجز رحلة عبر الأمان للسياحة والسفر.";
+        function renderProjectsList() {
+            const listDiv = document.getElementById('projects-list');
+            listDiv.innerHTML = '';
+            if(projects.length === 0) {
+                listDiv.innerHTML = '<p style="text-align:center; padding:20px; color:#999;">لا يوجد مشاريع أو زبائن محفوظة حالياً.</p>';
+                return;
+            }
 
-  // ===== Helpers =====
-  function $(id){ return document.getElementById(id); }
-  function parse(v){ if(!v) return null; var p=v.split("|"); return {name:p[0], code:p[1]}; }
+            projects.forEach(proj => {
+                let total = 0;
+                proj.spaces.forEach(s => total += Number(s.totalPrice || 0));
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openProject(proj.id);
+                card.innerHTML = `
+                    <h3>${proj.name}</h3>
+                    <p>تاريخ البدء: ${proj.date}</p>
+                    <p>عدد الغرف/المساحات: ${proj.spaces.length}</p>
+                    <div class="total-price">الإجمالي: ${total} د.ك</div>
+                `;
+                listDiv.appendChild(card);
+            });
+        }
 
-  // set date minimum = today
-  var today = new Date().toISOString().split("T")[0];
-  $("depart").min = today; $("ret").min = today;
+        function saveNewProject() {
+            const name = document.getElementById('cust-name').value.trim();
+            if(!name) {
+                alert('اسم الزبون حقل إلزامي لبناء الطلب المرجعي!');
+                return;
+            }
 
-  // ===== Trip type =====
-  var roundTrip = false;
-  function setTrip(round){
-    roundTrip = round;
-    $("tOne").setAttribute("aria-pressed", String(!round));
-    $("tRound").setAttribute("aria-pressed", String(round));
-    $("returnWrap").style.display = round ? "block" : "none";
-    updatePreview();
-  }
-  $("tOne").onclick = function(){ setTrip(false); };
-  $("tRound").onclick = function(){ setTrip(true); };
+            const newProj = {
+                id: 'SF-' + Math.floor(1000 + Math.random() * 9000),
+                name: name,
+                phone: document.getElementById('cust-phone').value.trim(),
+                address: document.getElementById('cust-address').value.trim(),
+                date: new Date().toLocaleDateString('ar-KW'),
+                delivery: '',
+                notes: '',
+                spaces: []
+            };
 
-  // ===== Swap cities =====
-  $("swap").onclick = function(){
-    var f=$("from").value, t=$("to").value;
-    $("from").value=t; $("to").value=f;
-    updatePreview(); clearErr();
-  };
+            projects.push(newProj);
+            saveToStorage();
+            
+            document.getElementById('cust-name').value = '';
+            document.getElementById('cust-phone').value = '';
+            document.getElementById('cust-address').value = '';
 
-  // ===== Passengers =====
-  var pax = 1;
-  function renderPax(){ $("paxCount").textContent = pax; }
-  $("plus").onclick = function(){ if(pax<9){ pax++; renderPax(); } };
-  $("minus").onclick = function(){ if(pax>1){ pax--; renderPax(); } };
+            openProject(newProj.id);
+        }
 
-  // ===== Live preview =====
-  function fmtDate(d){
-    if(!d) return "";
-    var months=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
-    var p=d.split("-"); return parseInt(p[2],10)+" "+months[parseInt(p[1],10)-1]+" "+p[0];
-  }
-  function updatePreview(){
-    var f=parse($("from").value), t=parse($("to").value);
-    $("pvFromC").textContent = f? f.code : "—";
-    $("pvFromN").textContent = f? f.name : "المغادرة";
-    $("pvToC").textContent   = t? t.code : "—";
-    $("pvToN").textContent   = t? t.name : "الوصول";
-    var dep=$("depart").value, rt=$("ret").value;
-    var when = dep ? fmtDate(dep) : "حدد الموعد";
-    if(roundTrip && dep && rt) when = fmtDate(dep)+" ⇄ "+fmtDate(rt);
-    $("pvWhen").textContent = when;
-  }
-  ["from","to","depart","ret"].forEach(function(id){ $(id).addEventListener("change", updatePreview); });
+        function openProject(id) {
+            currentProjectId = id;
+            const proj = projects.find(p => p.id === id);
+            
+            document.getElementById('view-project-title').innerText = `مشروع الزبون: ${proj.name}`;
+            document.getElementById('project-info-summary').innerHTML = `
+                📱 هاتف: ${proj.phone || 'غير مدخل'} | 🏠 العنوان: ${proj.address || 'غير مدخل'}
+            `;
+            
+            document.getElementById('proj-delivery').value = proj.delivery || '';
+            document.getElementById('proj-notes').value = proj.notes || '';
 
-  // ===== Validation + send =====
-  function clearErr(){
-    ["routeErr","departErr","retErr"].forEach(function(id){ $(id).parentElement.classList.remove("invalid"); });
-  }
-  function buildMessage(){
-    var f=parse($("from").value), t=parse($("to").value);
-    var lines=[];
-    lines.push("السلام عليكم، أرغب بحجز رحلة عبر *الأمان للسياحة والسفر*:");
-    lines.push("");
-    lines.push("• نوع الرحلة: " + (roundTrip ? "ذهاب وعودة" : "ذهاب فقط"));
-    lines.push("• من: " + f.name + " (" + f.code + ")");
-    lines.push("• إلى: " + t.name + " (" + t.code + ")");
-    lines.push("• تاريخ الذهاب: " + fmtDate($("depart").value));
-    if(roundTrip) lines.push("• تاريخ العودة: " + fmtDate($("ret").value));
-    lines.push("• عدد المسافرين: " + pax);
-    var nm=$("name").value.trim(); if(nm) lines.push("• الاسم: " + nm);
-    var nt=$("notes").value.trim(); if(nt) lines.push("• ملاحظات: " + nt);
-    return lines.join("\n");
-  }
-  $("send").onclick = function(){
-    clearErr();
-    var ok=true;
-    var f=$("from").value, t=$("to").value;
-    if(!f || !t || f===t){ $("routeErr").parentElement.classList.add("invalid"); ok=false; }
-    if(!$("depart").value){ $("departErr").parentElement.classList.add("invalid"); ok=false; }
-    if(roundTrip && !$("ret").value){ $("retErr").parentElement.classList.add("invalid"); ok=false; }
-    if(!ok){ document.querySelector(".invalid").scrollIntoView({behavior:"smooth",block:"center"}); return; }
-    var url="https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(buildMessage());
-    window.open(url,"_blank");
-  };
+            document.getElementById('proj-delivery').oninput = (e) => { proj.delivery = e.target.value; saveToStorage(); };
+            document.getElementById('proj-notes').oninput = (e) => { proj.notes = e.target.value; saveToStorage(); };
 
-  // direct WhatsApp links
-  var directURL="https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(WA_PLAIN);
-  $("waDirect").href=directURL;
-  $("waFloat").href=directURL;
+            renderSpacesList(proj);
+            navigate('screen-project-details');
+        }
 
-  renderPax(); updatePreview();
-</script>
+        function renderSpacesList(proj) {
+            const container = document.getElementById('spaces-list');
+            container.innerHTML = '';
+            if(proj.spaces.length === 0) {
+                container.innerHTML = '<p style="color:#999; font-size:0.9rem;">لا توجد مساحات أو غرف مضافة لهذا الزبون.</p>';
+                return;
+            }
+
+            proj.spaces.forEach((space, index) => {
+                const item = document.createElement('div');
+                item.className = 'card';
+                item.style.background = '#fcfcfc';
+                item.innerHTML = `
+                    <strong>${space.type} - ${space.customName || 'بدون اسم مخصص'}</strong>
+                    <p>المنتجات المشمولة: ${Object.keys(space.products).map(translateProdKey).join('، ')}</p>
+                    <div style="color:var(--gold); font-weight:bold;">سعر المساحة الإجمالي: ${space.totalPrice} د.ك</div>
+                    <button class="btn btn-danger" style="padding:4px 8px; font-size:11px; width:auto; position:absolute; left:10px; top:10px;" onclick="deleteSpace(${index}); event.stopPropagation();">حذف المساحة</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function translateProdKey(key) {
+            const trans = { carpet: 'سجاد', musnad: 'مساند', curtain: 'ستائر', sofa: 'كنب' };
+            return trans[key] || key;
+        }
+
+        function deleteSpace(index) {
+            if(confirm('هل تريد بالتأكيد حذف هذه المساحة من الفاتورة؟')) {
+                const proj = projects.find(p => p.id === currentProjectId);
+                proj.spaces.splice(index, 1);
+                saveToStorage();
+                renderSpacesList(proj);
+            }
+        }
+
+        function deleteCurrentProject() {
+            if(confirm('تحذير نهائي: هل أنت متأكد من مسح ملف هذا الزبون وفواتيره بالكامل ومسحه من الذاكرة؟')) {
+                projects = projects.filter(p => p.id !== currentProjectId);
+                saveToStorage();
+                navigate('screen-main');
+            }
+        }
+
+        function openNewSpace() {
+            selectedProducts = { carpet: false, musnad: false, curtain: false, sofa: false };
+            document.querySelectorAll('.product-box').forEach(b => b.classList.remove('selected'));
+            document.getElementById('space-custom-name').value = '';
+            navigate('screen-new-space');
+        }
+
+        function toggleProductSelection(prodKey) {
+            selectedProducts[prodKey] = !selectedProducts[prodKey];
+            document.getElementById(`p-box-${prodKey}`).classList.toggle('selected', selectedProducts[prodKey]);
+        }
+
+        function proceedToSpaceDetails() {
+            const hasSelection = Object.values(selectedProducts).some(v => v);
+            if(!hasSelection) {
+                alert('الرجاء تحديد منتج واحد على الأقل للمساحة للحساب المالي المالي!');
+                return;
+            }
+
+            if(selectedProducts.musnad) {
+                document.getElementById('section-drawing-tool').style.display = 'block';
+                setTimeout(resetDrawingCanvas, 50); // تأخير متناهي لضمان أبعاد حاوية الديف
+            } else {
+                document.getElementById('section-drawing-tool').style.display = 'none';
+            }
+
+            buildProductFieldsInputs();
+            navigate('screen-space-details');
+        }
+
+        function buildProductFieldsInputs() {
+            const container = document.getElementById('products-fields-inputs');
+            container.innerHTML = '';
+
+            if(selectedProducts.carpet) {
+                container.innerHTML += `
+                    <div class="card" style="border-right: 4px solid #8e44ad;">
+                        <h4>📦 تفاصيل تفصيل السجاد</h4>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+                            <div class="form-group"><label>الطول (م)</label><input type="number" step="0.01" id="c-length" oninput="calcCarpetArea()"></div>
+                            <div class="form-group"><label>العرض (م)</label><input type="number" step="0.01" id="c-width" oninput="calcCarpetArea()"></div>
+                        </div>
+                        <p id="c-area-display" style="font-weight:bold; color:#8e44ad; margin-bottom:10px;">المساحة الحالية: 0 م²</p>
+                        <div class="form-group"><label>اسم مسطرة الخام السجاد</label><input type="text" id="c-pattern"></div>
+                        <div class="form-group"><label>رقم اللون المطلوبة</label><input type="text" id="c-color"></div>
+                        <div class="form-group"><label>السعر الإجمالي للسجاد (د.ك)</label><input type="number" id="c-price" value="0"></div>
+                    </div>
+                `;
+            }
+
+            if(selectedProducts.musnad) {
+                container.innerHTML += `
+                    <div class="card" style="border-right: 4px solid var(--gold);">
+                        <h4>📦 تفاصيل وإنهاء تفصيل المساند</h4>
+                        <p style="font-size:0.8rem; color:#666; margin-bottom:8px;">الأطوال تؤخذ مباشرة عبر تثبيت مدخلات المخطط التفاعلي العلوي.</p>
+                        <div class="form-group"><label>مسطرة خام المساند</label><input type="text" id="m-pattern"></div>
+                        <div class="form-group"><label>رقم اللون للمسند</label><input type="text" id="m-color"></div>
+                        <div class="form-group"><label>السعر الإجمالي للمساند (د.ك)</label><input type="number" id="m-price" value="0"></div>
+                    </div>
+                `;
+            }
+
+            if(selectedProducts.curtain) {
+                container.innerHTML += `
+                    <div class="card" style="border-right: 4px solid #27ae60;">
+                        <h4>📦 تفاصيل الستائر بالمقاس</h4>
+                        <div id="curtains-wrapper"></div>
+                        <button class="btn btn-secondary" style="padding:6px; font-size:13px;" onclick="addCurtainItemField()">+ إضافة ستارة / نافذة أخرى</button>
+                    </div>
+                `;
+                addCurtainItemField();
+            }
+
+            if(selectedProducts.sofa) {
+                container.innerHTML += `
+                    <div class="card" style="border-right: 4px solid #e67e22;">
+                        <h4>📦 تفاصيل طلبية الكنب للورشة</h4>
+                        <div class="form-group"><label>وصف هيئة الكنب (مثال: كنب متصل زاوية حرف L قياس مخصص)</label><input type="text" id="s-desc" placeholder="ادخل نوع الإسفنج والخام المطلوب للكنب"></div>
+                        <div class="form-group"><label>السعر الإجمالي للكنب (د.ك)</label><input type="number" id="s-price" value="0"></div>
+                    </div>
+                `;
+            }
+        }
+
+        function calcCarpetArea() {
+            const l = parseFloat(document.getElementById('c-length').value) || 0;
+            const w = parseFloat(document.getElementById('c-width').value) || 0;
+            const area = (l * w).toFixed(2);
+            document.getElementById('c-area-display').innerText = `المساحة الحالية: ${l} × ${w} = ${area} م²`;
+        }
+
+        let curtainCounter = 0;
+        function addCurtainItemField() {
+            curtainCounter++;
+            const wrapper = document.getElementById('curtains-wrapper');
+            const item = document.createElement('div');
+            item.className = 'curtain-item';
+            item.id = `curtain-id-${curtainCounter}`;
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:0.85rem; margin-bottom:5px;">
+                    <span>نافذة ستارة #${curtainCounter}</span>
+                    <span style="color:red; cursor:pointer;" onclick="document.getElementById('curtain-id-${curtainCounter}').remove()">حذف 🗑️</span>
+                </div>
+                <div class="form-group">
+                    <label>النوع للستارة</label>
+                    <select class="curt-type"><option value="خام">خام ومفروشات</option><option value="رول">رول حماية</option></select>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
+                    <div class="form-group"><label>العرض (م)</label><input type="number" step="0.01" class="curt-w"></div>
+                    <div class="form-group"><label>الارتفاع (م)</label><input type="number" step="0.01" class="curt-h"></div>
+                    <div class="form-group"><label>السعر د.ك</label><input type="number" class="curt-p" value="0"></div>
+                </div>
+            `;
+            wrapper.appendChild(item);
+        }
+
+        // ==================== 🛠️ محرك أداة الرسم للـ Canvas والمحمي هندسياً ====================
+        function initCanvas() {
+            canvas = document.getElementById('drawing-canvas');
+            ctx = canvas.getContext('2d');
+            
+            canvas.addEventListener('touchstart', handleStart, false);
+            canvas.addEventListener('touchmove', handleMove, false);
+            canvas.addEventListener('touchend', handleEnd, false);
+
+            canvas.addEventListener('mousedown', handleStart, false);
+            canvas.addEventListener('mousemove', handleMove, false);
+            canvas.addEventListener('mouseup', handleEnd, false);
+        }
+
+        function resetDrawingCanvas() {
+            walls = [];
+            isDrawing = false;
+            const wrapper = document.getElementById('canvas-wrapper');
+            canvas.width = wrapper.clientWidth;
+            canvas.height = 280;
+            
+            startPoint = { x: canvas.width / 2, y: canvas.height / 2 };
+            lastPoint = { ...startPoint };
+            
+            redrawCanvas();
+        }
+
+        function getEventCoords(e) {
+            let clientX, clientY;
+            if(e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function handleStart(e) {
+            e.preventDefault();
+            const coords = getEventCoords(e);
+            isDrawing = true;
+            currentMousePoint = coords;
+        }
+
+        function handleMove(e) {
+            if(!isDrawing) return;
+            e.preventDefault();
+            currentMousePoint = getEventCoords(e);
+            redrawCanvas();
+        }
+
+        function handleEnd(e) {
+            if(!isDrawing) return;
+            e.preventDefault();
+            isDrawing = false;
+            
+            let corrected = snapTo8Directions(lastPoint, currentMousePoint);
+            let dist = Math.hypot(corrected.x - lastPoint.x, corrected.y - lastPoint.y);
+            
+            if(dist > 20) {
+                walls.push({
+                    p1: { ...lastPoint },
+                    p2: { ...corrected },
+                    lengthValue: '1.00',
+                    isDoor: false
+                });
+                lastPoint = { ...corrected };
+            }
+            redrawCanvas();
+        }
+
+        function snapTo8Directions(p1, p2) {
+            let dx = p2.x - p1.x;
+            let dy = p2.y - p1.y;
+            let angle = Math.atan2(dy, dx);
+            let octant = Math.round(angle / (Math.PI / 4));
+            let newAngle = octant * (Math.PI / 4);
+            let dist = Math.hypot(dx, dy);
+            return {
+                x: p1.x + dist * Math.cos(newAngle),
+                y: p1.y + dist * Math.sin(newAngle)
+            };
+        }
+
+        function undoLastWall() {
+            if(walls.length > 0) {
+                walls.pop();
+                if(walls.length > 0) {
+                    lastPoint = { ...walls[walls.length - 1].p2 };
+                } else {
+                    lastPoint = { ...startPoint };
+                }
+                redrawCanvas();
+            }
+        }
+
+        function closeDrawingShape() {
+            if(walls.length < 2) {
+                alert('الرجاء رسم جدارين على الأقل لإغلاق شكل الغرفة التلقائي الهندسي!');
+                return;
+            }
+            walls.push({
+                p1: { ...lastPoint },
+                p2: { ...startPoint },
+                lengthValue: '1.00',
+                isDoor: false
+            });
+            lastPoint = { ...startPoint };
+            redrawCanvas();
+        }
+
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // شبكة الخلفية الهندسية الديكورية
+            ctx.strokeStyle = '#eef0f2';
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=20) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            for(let j=0; j<canvas.height; j+=20) {
+                ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
+            }
+
+            walls.forEach((wall) => {
+                ctx.beginPath();
+                ctx.moveTo(wall.p1.x, wall.p1.y);
+                ctx.lineTo(wall.p2.x, wall.p2.y);
+                
+                if(wall.isDoor) {
+                    ctx.strokeStyle = '#d9534f'; 
+                    ctx.lineWidth = 6;
+                } else {
+                    ctx.strokeStyle = '#0D0D0D';
+                    ctx.lineWidth = 4;
+                }
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(wall.p2.x, wall.p2.y, 4, 0, 2*Math.PI);
+                ctx.fillStyle = '#C8A96E';
+                ctx.fill();
+            });
+
+            if(isDrawing) {
+                let corrected = snapTo8Directions(lastPoint, currentMousePoint);
+                ctx.beginPath();
+                ctx.moveTo(lastPoint.x, lastPoint.y);
+                ctx.lineTo(corrected.x, corrected.y);
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            renderWallLabelsInputs();
+        }
+
+        function renderWallLabelsInputs() {
+            const container = document.getElementById('wall-labels-container');
+            container.innerHTML = '';
+
+            walls.forEach((wall, index) => {
+                let midX = (wall.p1.x + wall.p2.x) / 2;
+                let midY = (wall.p1.y + wall.p2.y) / 2;
+
+                const div = document.createElement('div');
+                div.className = 'wall-input-container';
+                div.style.left = `${midX}px`;
+                div.style.top = `${midY}px`;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.step = '0.01';
+                input.value = wall.lengthValue;
+                input.oninput = (e) => {
+                    wall.lengthValue = e.target.value;
+                };
+
+                const doorBtn = document.createElement('button');
+                doorBtn.className = `btn-door ${wall.isDoor ? 'has-door' : ''}`;
+                doorBtn.innerText = '🚪';
+                doorBtn.onclick = () => {
+                    walls.forEach((w, idx) => { if(idx !== index) w.isDoor = false; });
+                    wall.isDoor = !wall.isDoor;
+                    redrawCanvas();
+                };
+
+                div.appendChild(input);
+                div.appendChild(doorBtn);
+                container.appendChild(div);
+            });
+        }
+
+        function saveSpaceToProject() {
+            const type = document.getElementById('space-type').value;
+            const customName = document.getElementById('space-custom-name').value.trim();
+            
+            let spacePayload = {
+                type: type,
+                customName: customName,
+                products: {},
+                wallsData: JSON.parse(JSON.stringify(walls)), 
+                totalPrice: 0
+            };
+
+            let spaceSum = 0;
+
+            if(selectedProducts.carpet) {
+                let p = parseFloat(document.getElementById('c-price').value) || 0;
+                spaceSum += p;
+                spacePayload.products.carpet = {
+                    length: document.getElementById('c-length').value,
+                    width: document.getElementById('c-width').value,
+                    pattern: document.getElementById('c-pattern').value,
+                    color: document.getElementById('c-color').value,
+                    price: p
+                };
+            }
+
+            if(selectedProducts.musnad) {
+                if(walls.length === 0) {
+                    alert('المساند مشمولة، الرجاء سحب ورسم مخطط جدران المساحة أولاً للحفظ الفني!');
+                    return;
+                }
+                let p = parseFloat(document.getElementById('m-price').value) || 0;
+                spaceSum += p;
+                spacePayload.products.musnad = {
+                    pattern: document.getElementById('m-pattern').value,
+                    color: document.getElementById('m-color').value,
+                    price: p
+                };
+            }
+
+            if(selectedProducts.curtain) {
+                let curtainsItems = [];
+                document.querySelectorAll('#curtains-wrapper .curtain-item').forEach(el => {
+                    let cp = parseFloat(el.querySelector('.curt-p').value) || 0;
+                    spaceSum += cp;
+                    curtainsItems.push({
+                        type: el.querySelector('.curt-type').value,
+                        width: el.querySelector('.curt-w').value,
+                        height: el.querySelector('.curt-h').value,
+                        price: cp
+                    });
+                });
+                spacePayload.products.curtain = curtainsItems;
+            }
+
+            if(selectedProducts.sofa) {
+                let p = parseFloat(document.getElementById('s-price').value) || 0;
+                spaceSum += p;
+                spacePayload.products.sofa = {
+                    desc: document.getElementById('s-desc').value,
+                    price: p
+                };
+            }
+
+            spacePayload.totalPrice = spaceSum;
+
+            const proj = projects.find(p => p.id === currentProjectId);
+            proj.spaces.push(spacePayload);
+            saveToStorage();
+
+            openProject(currentProjectId);
+        }
+
+        function closeSpaceScreen() {
+            navigate('screen-project-details');
+        }
+
+        // ==================== 🖨️ محرك توليد الفواتير وضمان ثبات صور الـ Canvas ====================
+        
+        function generateStaticCanvasImage(wallsData) {
+            if(!wallsData || wallsData.length === 0) return '';
+            
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 300;
+            tempCanvas.height = 200;
+            const tCtx = tempCanvas.getContext('2d');
+            
+            // حقن خلفية بيضاء نقية وثابتة للـ PDF
+            tCtx.fillStyle = '#ffffff';
+            tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            wallsData.forEach(wall => {
+                tCtx.beginPath();
+                tCtx.moveTo(wall.p1.x * (300 / canvas.width), wall.p1.y * (200 / canvas.height));
+                tCtx.lineTo(wall.p2.x * (300 / canvas.width), wall.p2.y * (200 / canvas.height));
+                if(wall.isDoor) {
+                    tCtx.strokeStyle = '#d9534f';
+                    tCtx.lineWidth = 5;
+                } else {
+                    tCtx.strokeStyle = '#000000';
+                    tCtx.lineWidth = 3;
+                }
+                tCtx.stroke();
+            });
+            
+            return tempCanvas.toDataURL('image/png');
+        }
+
+        function exportPDF(target) {
+            const proj = projects.find(p => p.id === currentProjectId);
+            let totalSum = 0;
+            proj.spaces.forEach(s => totalSum += Number(s.totalPrice || 0));
+
+            if(target === 'customer') {
+                document.getElementById('inv-cust-id').innerText = proj.id;
+                document.getElementById('inv-cust-date').innerText = proj.date;
+                document.getElementById('inv-cust-name').innerText = proj.name;
+                
+                const tbody = document.querySelector('#inv-cust-table tbody');
+                tbody.innerHTML = '';
+
+                proj.spaces.forEach(s => {
+                    let descParts = [];
+                    if(s.products.carpet) descParts.push(`سجاد ومفروشات راقية`);
+                    if(s.products.musnad) descParts.push(`تفصيل طقم مساند ديوانية`);
+                    if(s.products.curtain) descParts.push(`تفصيل وتركيب ستائر مخصصة (${s.products.curtain.length} نافذة)`);
+                    if(s.products.sofa) descParts.push(`طقم كنب مخصص: ${s.products.sofa.desc || ''}`);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${s.type}</strong><br><span style="font-size:11px; color:#555;">${s.customName || ''}</span></td>
+                        <td>${descParts.join(' + ')}</td>
+                        <td>${s.totalPrice} د.ك</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('inv-cust-total').innerText = totalSum;
+                document.getElementById('inv-cust-notes-area').innerHTML = proj.notes ? `<strong>شروط وملاحظات الفاتورة العامّة:</strong><br>${proj.notes.replace(/\n/g, '<br>')}` : '';
+
+                triggerPDFGeneration('invoice-customer', `فاتورة_سالفورد_للزبون_${proj.name}`);
+                
+            } else if(target === 'internal') {
+                document.getElementById('inv-int-name').innerText = proj.name;
+                document.getElementById('inv-int-phone').innerText = proj.phone || 'غير مدخل';
+                document.getElementById('inv-int-address').innerText = proj.address || 'غير مدخل';
+                document.getElementById('inv-int-date').innerText = proj.date;
+                document.getElementById('inv-int-delivery').innerText = proj.delivery || 'غير محدد بعد';
+                document.getElementById('inv-int-total').innerText = totalSum;
+                document.getElementById('inv-int-notes-area').innerHTML = proj.notes ? `<strong>ملاحظات الإدارة وشروط تسليم الورشة:</strong><br>${proj.notes.replace(/\n/g, '<br>')}` : 'لا توجد ملاحظات إضافية للورشة.';
+
+                const container = document.getElementById('inv-int-spaces-details');
+                container.innerHTML = '';
+
+                proj.spaces.forEach((s) => {
+                    const spaceBlock = document.createElement('div');
+                    spaceBlock.style.border = '2px solid #000';
+                    spaceBlock.style.padding = '15px';
+                    spaceBlock.style.marginBottom = '20px';
+                    spaceBlock.style.background = '#fff';
+                    spaceBlock.style.pageBreakInside = 'avoid'; 
+
+                    let spaceDetailsHtml = `<h4 style="background:#000; color:#fff; padding:6px; font-size:14px;">📋 مساحة: ${s.type} [${s.customName || 'عامة'}] - الإجمالي الفرعي لها: ${s.totalPrice} د.ك</h4><br>`;
+                    
+                    if(s.wallsData && s.wallsData.length > 0) {
+                        const imgData = generateStaticCanvasImage(s.wallsData);
+                        spaceDetailsHtml += `
+                            <div style="display:flex; gap:20px; align-items:flex-start; margin-bottom:15px; border-bottom:1px dashed #ccc; padding-bottom:10px;">
+                                <div>
+                                    <p><strong>📐 كروكي المخطط وموقع الأبواب:</strong></p>
+                                    <img src="${imgData}" style="width:220px; height:150px; border:1px solid #000; margin-top:5px;" />
+                                </div>
+                                <div style="font-size:12px; line-height:1.6;">
+                                    <p><strong>مقاسات الجدران المعتمدة للورشة:</strong></p>
+                                    <ol style="padding-right:15px;">
+                        `;
+                        s.wallsData.forEach((w, idx) => {
+                            spaceDetailsHtml += `<li>جدار #${idx+1}: بقيمة مقاس ${w.lengthValue} متر ${w.isDoor ? ' 🚪 [باب]' : ''}</li>`;
+                        });
+                        spaceDetailsHtml += `</ol></div></div>`;
+                    }
+
+                    spaceDetailsHtml += `<div style="font-size:12px; line-height:1.6;">`;
+                    if(s.products.carpet) {
+                        let c = s.products.carpet;
+                        spaceDetailsHtml += `<p>🔹 <strong>السجاد:</strong> مقاس الحقل: ${c.length} × ${c.width} م | مسطرة: ${c.pattern || '-'} | لون: ${c.color || '-'} | سعر: ${c.price} د.ك</p>`;
+                    }
+                    if(s.products.musnad) {
+                        let m = s.products.musnad;
+                        spaceDetailsHtml += `<p>🔹 <strong>المساند:</strong> مسطرة الخام المعتمدة: ${m.pattern || '-'} | رقم لون المسند: ${m.color || '-'} | سعر: ${m.price} د.ك</p>`;
+                    }
+                    if(s.products.curtain) {
+                        spaceDetailsHtml += `<p>🔹 <strong>الستائر المطلوبة:</strong></p><ul style="padding-right:15px;">`;
+                        s.products.curtain.forEach((curt, cIdx) => {
+                            spaceDetailsHtml += `<li>ستارة #${cIdx+1}: نوع [${curt.type}] عروض ${curt.width}م × ارتفاع ${curt.height}م | سعر: ${curt.price} د.ك</li>`;
+                        });
+                        spaceDetailsHtml += `</ul>`;
+                    }
+                    if(s.products.sofa) {
+                        spaceDetailsHtml += `<p>🔹 <strong>تفصيل الكنب:</strong> مواصفات الورشة: ${s.products.sofa.desc} | سعر: ${s.products.sofa.price} د.ك</p>`;
+                    }
+                    spaceDetailsHtml += `</div>`;
+
+                    spaceBlock.innerHTML = spaceDetailsHtml;
+                    container.appendChild(spaceBlock);
+                });
+
+                triggerPDFGeneration('invoice-internal', `نسخة_الورشة_الداخلية_${proj.name}`);
+            }
+        }
+
+        function triggerPDFGeneration(elementId, fileName) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block'; 
+
+            const opt = {
+                margin:       10,
+                filename:     `${fileName}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, background: '#ffffff' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    element.style.display = 'none'; 
+                }).catch(err => {
+                    console.error('فشل في تصدير الـ PDF التلقائي، جاري التحويل لخطة الحفظ الطارئة:', err);
+                    fallbackBrowserPrint(element);
+                });
+            } else {
+                alert('تنبيه فني: تعمل بدون إنترنت حالياً، سيتم فتح نافذة طباعة الجهاز الثابتة لحفظ طلبك بصيغة PDF فوراً بدون تعطل.');
+                fallbackBrowserPrint(element);
+            }
+        }
+
+        function fallbackBrowserPrint(element) {
+            const mainBody = document.querySelectorAll('body > *:not(#' + element.id + ')');
+            mainBody.forEach(el => el.style.display = 'none');
+            element.style.display = 'block';
+            
+            window.print();
+            
+            mainBody.forEach(el => el.style.display = '');
+            element.style.display = 'none';
+        }
+
+        function shareWhatsApp(target) {
+            const proj = projects.find(p => p.id === currentProjectId);
+            let totalSum = 0;
+            proj.spaces.forEach(s => totalSum += Number(s.totalPrice || 0));
+
+            let msg = `*سالفورد للأثاث والمفروشات*\n`;
+            msg += `*تقرير وملخص تفاصيل طلبية الزبون*\n\n`;
+            msg += `*الزبون:* ${proj.name}\n`;
+            msg += `*الرقم المرجعي:* ${proj.id}\n`;
+            msg += `*التاريخ:* ${proj.date}\n`;
+            msg += `---------------------------\n`;
+
+            proj.spaces.forEach((s, idx) => {
+                msg += `*${idx+1}) مساحة ${s.type}* [${s.customName || 'عامة'}]\n`;
+                if(s.products.carpet) msg += ` - سجاد: مقاس الحقل ${s.products.carpet.length}×${s.products.carpet.width}م\n`;
+                if(s.products.musnad) msg += ` - طقم مساند ديوانية كامل\n`;
+                if(s.products.curtain) msg += ` - تفصيل ستائر عدد: ${s.products.curtain.length} نافذة\n`;
+                if(s.products.sofa) msg += ` - كنب مخصص: ${s.products.sofa.desc}\n`;
+                msg += ` *سعر الغرفة:* ${s.totalPrice} د.ك\n\n`;
+            });
+
+            msg += `---------------------------\n`;
+            msg += `*الإجمالي النهائي للطلب:* ${totalSum} د.ك\n`;
+            if(proj.notes) msg += `*ملاحظات إضافية:* ${proj.notes}\n`;
+            
+            let targetPhone = (target === 'customer') ? (proj.phone || '') : '96555943343';
+            let url = `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+    </script>
 </body>
 </html>
+
