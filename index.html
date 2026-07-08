@@ -619,7 +619,6 @@
         let dragOffset = { x: 0, y: 0 };
         let activeHandle = null;
 
-        // دالة التنقل المستقرة والخالية من الأخطاء والمدققة جيداً
         function navigate(screenId) {
             document.querySelectorAll('.screen').forEach(s => {
                 s.classList.remove('active');
@@ -797,7 +796,7 @@
                 container.innerHTML += `
                     <div class="card" style="border-right: 4px solid var(--gold);">
                         <h4>📦 تفاصيل المساند</h4>
-                        <div class="form-group"><label>مسطرة الخام</label><input type="text" id="m-pattern" placeholder="مسطرة القماش المعتمدة للظهر والمخدات"></div>
+                        <div class="form-group"><label>مواصفات / مسطرة الخام</label><input type="text" id="m-pattern" placeholder="مسطرة القماش المعتمدة للظهر والمخدات"></div>
                         <div class="form-group"><label>رقم اللون</label><input type="text" id="m-color" placeholder="رقم لون قماش المساند"></div>
                         <div class="form-group"><label>السعر (د.ك)</label><input type="number" id="m-price" value="0"></div>
                     </div>
@@ -1255,8 +1254,8 @@
                     html += `<table class="workshop-spec-table">
                                 <thead>
                                     <tr>
-                                        <th style="width:20%">المنتج</th>
-                                        <th style="width:55%">المواصفات الفنية والتفاصيل للعمال</th>
+                                        <th style="width:25%">المنتج</th>
+                                        <th style="width:50%">المواصفات الفنية والتفاصيل للعمال</th>
                                         <th style="width:25%">القياسات والأبعاد</th>
                                     </tr>
                                 </thead>
@@ -1266,7 +1265,7 @@
                         html += `<tr>
                                     <td><b>سجاد</b></td>
                                     <td>مسطرة السجاد: ${s.products.carpet.pattern || 'غير محدد'} <br>رقم اللون: ${s.products.carpet.color || 'غير محدد'}</td>
-                                    <td>الطول: ${s.products.carpet.length} م<br>العرض: ${s.products.carpet.width} م</td>
+                                    <td>الطول: ${s.products.carpet.length || '-'} م<br>العرض: ${s.products.carpet.width || '-'} م</td>
                                  </tr>`;
                     }
                     if(s.products.musnad) {
@@ -1283,10 +1282,10 @@
                                     <td>حسب طلب العميل</td>
                                  </tr>`;
                     }
-                    if(s.products.curtain) {
+                    if(s.products.curtain && Array.isArray(s.products.curtain)) {
                         let curtainDetails = '';
                         s.products.curtain.forEach((curt, i) => {
-                            curtainDetails += `• ستارة ${i+1}: ${curt.type} (عرض ${curt.width}م × ارتفاع ${curt.height}م)<br>`;
+                            curtainDetails += `• ستارة ${i+1}: ${curt.type || 'قماش مخصص'} (عرض ${curt.width || '-'}م × ارتفاع ${curt.height || '-'}م)<br>`;
                         });
                         html += `<tr>
                                     <td><b>ستائر (${s.products.curtain.length})</b></td>
