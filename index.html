@@ -219,7 +219,6 @@
             color: var(--black);
         }
 
-        /* حاوية الرسم المستقرة والضرورية لمنع حركة متصفح الجوال أثناء الرسم بالايرباك */
         .canvas-container {
             width: 100%;
             background: #fafafa;
@@ -245,7 +244,6 @@
             margin-bottom: 15px;
         }
 
-        /* وضعية حقول مدخلات المقاس والأبواب الحية المدمجة هندسياً دون تغيير شكل الكانفاس */
         .wall-input-container {
             position: absolute;
             background: white;
@@ -290,7 +288,6 @@
             background: #fdfdfd;
         }
 
-        /* الفواتير المخفية المعدة للتصدير السلس كـ PDF حقيقي */
         #invoice-customer, #invoice-internal {
             display: none;
             width: 100%;
@@ -516,9 +513,9 @@
         let canvas, ctx;
         let walls = []; 
         let isDrawing = false;
-        let startPoint = { x: 150, y: 150 };
-        let lastPoint = { x: 150, y: 150 };
-        let currentMousePoint = { x: 150, y: 150 };
+        let startPoint = null; 
+        let lastPoint = null;  
+        let currentMousePoint = { x: 0, y: 0 };
 
         function navigate(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -591,5 +588,474 @@
             document.getElementById('proj-delivery').value = proj.delivery || '';
             document.getElementById('proj-notes').value = proj.notes || '';
             document.getElementById('proj-delivery').oninput = (e) => { proj.delivery = e.target.value; saveToStorage(); };
-            document.getElementById('proj-notes').oninput = (e) => { proj
+            document.getElementById('proj-notes').oninput = (e) => { proj.notes = e.target.value; saveToStorage(); };
+            renderSpacesList(proj);
+            navigate('screen-project-details');
+        }
 
+        function renderSpacesList(proj) {
+            const container = document.getElementById('spaces-list');
+            container.innerHTML = '';
+            if(proj.spaces.length === 0) {
+                container.innerHTML = '<p style="color:#999; font-size:0.9rem;">لا توجد مساحات مضافة.</p>';
+                return;
+            }
+            proj.spaces.forEach((space, index) => {
+                const item = document.createElement('div');
+                item.className = 'card';
+                item.innerHTML = `
+                    <strong>${space.type} - ${space.customName || 'بدون اسم'}</strong>
+                    <p>المنتجات: ${Object.keys(space.products).map(translateProdKey).join('، ')}</p>
+                    <div style="color:var(--gold); font-weight:bold;">السعر: ${space.totalPrice} د.ك</div>
+                    <button class="btn btn-danger" style="padding:4px 8px; font-size:11px; width:auto; position:absolute; left:10px; top:10px;" onclick="deleteSpace(${index}); event.stopPropagation();">حذف المساحة</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function translateProdKey(key) {
+            const trans = { carpet: 'سجاد', musnad: 'مساند', curtain: 'ستائر', sofa: 'كنب' };
+            return trans[key] || key;
+        }
+
+        function deleteSpace(index) {
+            if(confirm('هل تريد حذف هذه المساحة؟')) {
+                const proj = projects.find(p => p.id === currentProjectId);
+                proj.spaces.splice(index, 1);
+                saveToStorage();
+                renderSpacesList(proj);
+            }
+        }
+
+        function deleteCurrentProject() {
+            if(confirm('تحذير: هل أنت متأكد من مسح هذا المشروع نهائياً؟')) {
+                projects = projects.filter(p => p.id !== currentProjectId);
+                saveToStorage();
+                navigate('screen-main');
+            }
+        }
+
+        function openNewSpace() {
+            selectedProducts = { carpet: false, musnad: false, curtain: false, sofa: false };
+            document.querySelectorAll('.product-box').forEach(b => b.classList.remove('selected'));
+            document.getElementById('space-custom-name').value = '';
+            navigate('screen-new-space');
+        }
+
+        function toggleProductSelection(prodKey) {
+            selectedProducts[prodKey] = !selectedProducts[prodKey];
+            document.getElementById(`p-box-${prodKey}`).classList.toggle('selected', selectedProducts[prodKey]);
+        }
+
+        function proceedToSpaceDetails() {
+            const hasSelection = Object.values(selectedProducts).some(v => v);
+            if(!hasSelection) {
+                alert('الرجاء تحديد منتج واحد على الأقل!');
+                return;
+            }
+            if(selectedProducts.musnad) {
+                document.getElementById('section-drawing-tool').style.display = 'block';
+                setTimeout(resetDrawingCanvas, 50);
+            } else {
+                document.getElementById('section-drawing-tool').style.display = 'none';
+            }
+            buildProductFieldsInputs();
+            navigate('screen-space-details');
+        }
+
+        function buildProductFieldsInputs() {
+            const container = document.getElementById('products-fields-inputs');
+            container.innerHTML = '';
+
+            if(selectedProducts.carpet) {
+                container.innerHTML += `
+                    <div class="card" style="border-right: 4px solid #8e44ad;">
+                        <h4>📦 تفاصيل السجاد</h4>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+                            <div class="form-group"><label>الطول (م)</label><input type="number" step="0.01" id="c-length" oninput="calcCarpetArea()"></div>
+                            <div class="form-group"><label>العرض (م)</label><input type="number" step="0.01" id="c-width" oninput="calcCarpetArea()"></div>
+                        </div>
+                        <p id="c-area-display" style="font-weight:bold; color:#8e44ad; margin-bottom:10px;">المساحة: 0 م²</p>
+                        <div class="form-group"><label>اسم المسطرة</label><input type="text" id="c-pattern"></div>
+                        <div class="form-group"><label>رقم اللون</label><input type="text" id="c-color"></div>
+                        <div class="form-group"><label>السعر (د.ك)</label><input type="number" id="c-price" value="0"></div>
+                    </div>
+                `;
+            }
+
+            if(selectedProducts.musnad) {
+                container.innerHTML += `
+                    <div class="card" style="border-right: 4px solid var(--gold);">
+                        <h4>📦 تفاصيل المساند</h4>
+                        <div class="form-group"><label>مسطرة الخام</label><input type="text" id="m-pattern"></div>
+                        <div class="form-group"><label>رقم اللون</label><input type="text" id="m-color"></div>
+                        <div class="form-group"><label>السعر (د.ك)</label><input type="number" id="m-price" value="0"></div>
+                    </div>
+                `;
+            }
+
+            if(selectedProducts.curtain) {
+                container.innerHTML += `
+                    <div class="card" style="border-right: 4px solid #27ae60;">
+                        <h4>📦 تفاصيل الستائر</h4>
+                        <div id="curtains-wrapper"></div>
+                        <button class="btn btn-secondary" style="padding:6px; font-size:13px;" onclick="addCurtainItemField()">+ إضافة ستارة أخرى</button>
+                    </div>
+                `;
+                addCurtainItemField();
+            }
+
+            if(selectedProducts.sofa) {
+                container.innerHTML += `
+                    <div class="card" style="border-right: 4px solid #e67e22;">
+                        <h4>📦 تفاصيل الكنب</h4>
+                        <div class="form-group"><label>الوصف</label><input type="text" id="s-desc" placeholder="كنب زاوية 6 مقاعد"></div>
+                        <div class="form-group"><label>السعر (د.ك)</label><input type="number" id="s-price" value="0"></div>
+                    </div>
+                `;
+            }
+        }
+
+        function calcCarpetArea() {
+            const l = parseFloat(document.getElementById('c-length').value) || 0;
+            const w = parseFloat(document.getElementById('c-width').value) || 0;
+            document.getElementById('c-area-display').innerText = `المساحة: ${l} × ${w} = ${(l * w).toFixed(2)} م²`;
+        }
+
+        let curtainCounter = 0;
+        function addCurtainItemField() {
+            curtainCounter++;
+            const wrapper = document.getElementById('curtains-wrapper');
+            const item = document.createElement('div');
+            item.className = 'curtain-item';
+            item.id = `curtain-id-${curtainCounter}`;
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:0.85rem; margin-bottom:5px;">
+                    <span>ستارة #${curtainCounter}</span>
+                    <span style="color:red; cursor:pointer;" onclick="document.getElementById('curtain-id-${curtainCounter}').remove()">حذف 🗑️</span>
+                </div>
+                <div class="form-group">
+                    <label>النوع</label>
+                    <select class="curt-type"><option value="خام">خام</option><option value="رول">رول</option></select>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
+                    <div class="form-group"><label>العرض (م)</label><input type="number" step="0.01" class="curt-w"></div>
+                    <div class="form-group"><label>الارتفاع (م)</label><input type="number" step="0.01" class="curt-h"></div>
+                    <div class="form-group"><label>السعر د.ك</label><input type="number" class="curt-p" value="0"></div>
+                </div>
+            `;
+            wrapper.appendChild(item);
+        }
+
+        // ==================== أداة الرسم للـ Canvas ====================
+        function initCanvas() {
+            canvas = document.getElementById('drawing-canvas');
+            ctx = canvas.getContext('2d');
+            canvas.addEventListener('touchstart', handleStart, false);
+            canvas.addEventListener('touchmove', handleMove, false);
+            canvas.addEventListener('touchend', handleEnd, false);
+            canvas.addEventListener('mousedown', handleStart, false);
+            canvas.addEventListener('mousemove', handleMove, false);
+            canvas.addEventListener('mouseup', handleEnd, false);
+        }
+
+        function resetDrawingCanvas() {
+            walls = [];
+            isDrawing = false;
+            startPoint = null; 
+            lastPoint = null;
+            const wrapper = document.getElementById('canvas-wrapper');
+            canvas.width = wrapper.clientWidth;
+            canvas.height = 280;
+            redrawCanvas();
+        }
+
+        function getEventCoords(e) {
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const rect = canvas.getBoundingClientRect();
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function handleStart(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const coords = getEventCoords(e);
+            currentMousePoint = coords;
+
+            if (walls.length === 0 && startPoint === null) {
+                startPoint = { x: coords.x, y: coords.y };
+                lastPoint = { x: coords.x, y: coords.y };
+            }
+        }
+
+        function handleMove(e) {
+            if(!isDrawing) return;
+            e.preventDefault();
+            currentMousePoint = getEventCoords(e);
+            redrawCanvas();
+        }
+
+        function handleEnd(e) {
+            if(!isDrawing) return;
+            e.preventDefault();
+            isDrawing = false;
+            
+            let corrected = snapTo8Directions(lastPoint, currentMousePoint);
+            let dist = Math.hypot(corrected.x - lastPoint.x, corrected.y - lastPoint.y);
+            
+            if(dist > 15) {
+                walls.push({ p1: { ...lastPoint }, p2: { ...corrected }, lengthValue: '1.00', isDoor: false });
+                lastPoint = { ...corrected };
+            }
+            redrawCanvas();
+        }
+
+        function snapTo8Directions(p1, p2) {
+            let dx = p2.x - p1.x;
+            let dy = p2.y - p1.y;
+            let angle = Math.atan2(dy, dx);
+            let octant = Math.round(angle / (Math.PI / 4));
+            let newAngle = octant * (Math.PI / 4);
+            let dist = Math.hypot(dx, dy);
+            return { x: p1.x + dist * Math.cos(newAngle), y: p1.y + dist * Math.sin(newAngle) };
+        }
+
+        function undoLastWall() {
+            if(walls.length > 0) {
+                walls.pop();
+                if (walls.length > 0) {
+                    lastPoint = { ...walls[walls.length - 1].p2 };
+                } else {
+                    startPoint = null;
+                    lastPoint = null;
+                }
+                redrawCanvas();
+            }
+        }
+
+        function closeDrawingShape() {
+            if(walls.length < 2) {
+                alert('الرجاء رسم جدارين على الأقل لإغلاق الشكل!');
+                return;
+            }
+            walls.push({ p1: { ...lastPoint }, p2: { ...startPoint }, lengthValue: '1.00', isDoor: false });
+            lastPoint = { ...startPoint };
+            redrawCanvas();
+        }
+
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#eef0f2';
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=20) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
+            for(let j=0; j<canvas.height; j+=20) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
+
+            walls.forEach((wall) => {
+                ctx.beginPath();
+                ctx.moveTo(wall.p1.x, wall.p1.y);
+                ctx.lineTo(wall.p2.x, wall.p2.y);
+                if(wall.isDoor) { ctx.strokeStyle = '#d9534f'; ctx.lineWidth = 6; } 
+                else { ctx.strokeStyle = '#0D0D0D'; ctx.lineWidth = 4; }
+                ctx.stroke();
+            });
+
+            if(isDrawing && lastPoint !== null) {
+                let corrected = snapTo8Directions(lastPoint, currentMousePoint);
+                ctx.beginPath(); ctx.moveTo(lastPoint.x, lastPoint.y); ctx.lineTo(corrected.x, corrected.y);
+                ctx.strokeStyle = '#999'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+            }
+            renderWallLabelsInputs();
+        }
+
+        function renderWallLabelsInputs() {
+            const container = document.getElementById('wall-labels-container');
+            container.innerHTML = '';
+            walls.forEach((wall, index) => {
+                let midX = (wall.p1.x + wall.p2.x) / 2;
+                let midY = (wall.p1.y + wall.p2.y) / 2;
+                const div = document.createElement('div');
+                div.className = 'wall-input-container';
+                div.style.left = `${midX}px`; div.style.top = `${midY}px`;
+
+                const input = document.createElement('input');
+                input.type = 'number'; input.step = '0.01'; input.value = wall.lengthValue;
+                input.oninput = (e) => { wall.lengthValue = e.target.value; };
+
+                const doorBtn = document.createElement('button');
+                doorBtn.className = `btn-door ${wall.isDoor ? 'has-door' : ''}`; doorBtn.innerText = '🚪';
+                doorBtn.onclick = () => {
+                    walls.forEach((w, idx) => { if(idx !== index) w.isDoor = false; });
+                    wall.isDoor = !wall.isDoor;
+                    redrawCanvas();
+                };
+                div.appendChild(input); div.appendChild(doorBtn); container.appendChild(div);
+            });
+        }
+
+        function saveSpaceToProject() {
+            const type = document.getElementById('space-type').value;
+            const customName = document.getElementById('space-custom-name').value.trim();
+            let spacePayload = { type: type, customName: customName, products: {}, wallsData: JSON.parse(JSON.stringify(walls)), totalPrice: 0 };
+            let spaceSum = 0;
+
+            if(selectedProducts.carpet) {
+                let p = parseFloat(document.getElementById('c-price').value) || 0; spaceSum += p;
+                spacePayload.products.carpet = { length: document.getElementById('c-length').value, width: document.getElementById('c-width').value, pattern: document.getElementById('c-pattern').value, color: document.getElementById('c-color').value, price: p };
+            }
+            if(selectedProducts.musnad) {
+                if(walls.length === 0) { alert('الرجاء رسم مخطط جدران المساحة أولاً!'); return; }
+                let p = parseFloat(document.getElementById('m-price').value) || 0; spaceSum += p;
+                spacePayload.products.musnad = { pattern: document.getElementById('m-pattern').value, color: document.getElementById('m-color').value, price: p };
+            }
+            if(selectedProducts.curtain) {
+                let curtainsItems = [];
+                document.querySelectorAll('#curtains-wrapper .curtain-item').forEach(el => {
+                    let cp = parseFloat(el.querySelector('.curt-p').value) || 0; spaceSum += cp;
+                    curtainsItems.push({ type: el.querySelector('.curt-type').value, width: el.querySelector('.curt-w').value, height: el.querySelector('.curt-h').value, price: cp });
+                });
+                spacePayload.products.curtain = curtainsItems;
+            }
+            if(selectedProducts.sofa) {
+                let p = parseFloat(document.getElementById('s-price').value) || 0; spaceSum += p;
+                spacePayload.products.sofa = { desc: document.getElementById('s-desc').value, price: p };
+            }
+
+            spacePayload.totalPrice = spaceSum;
+            const proj = projects.find(p => p.id === currentProjectId);
+            proj.spaces.push(spacePayload);
+            saveToStorage();
+            openProject(currentProjectId);
+        }
+
+        function closeSpaceScreen() { navigate('screen-project-details'); }
+
+        function generateStaticCanvasImage(wallsData) {
+            if(!wallsData || wallsData.length === 0) return '';
+            const tempCanvas = document.createElement('canvas'); tempCanvas.width = 300; tempCanvas.height = 200;
+            const tCtx = tempCanvas.getContext('2d');
+            tCtx.fillStyle = '#ffffff'; tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            wallsData.forEach(wall => {
+                tCtx.beginPath();
+                tCtx.moveTo(wall.p1.x * (300 / 350), wall.p1.y * (200 / 280));
+                tCtx.lineTo(wall.p2.x * (300 / 350), wall.p2.y * (200 / 280));
+                tCtx.strokeStyle = wall.isDoor ? '#d9534f' : '#000000'; tCtx.lineWidth = wall.isDoor ? 5 : 3; tCtx.stroke();
+            });
+            return tempCanvas.toDataURL('image/png');
+        }
+
+        function exportPDF(target) {
+            const proj = projects.find(p => p.id === currentProjectId);
+            let totalSum = 0; proj.spaces.forEach(s => totalSum += Number(s.totalPrice || 0));
+
+            if(target === 'customer') {
+                document.getElementById('inv-cust-id').innerText = proj.id;
+                document.getElementById('inv-cust-date').innerText = proj.date;
+                document.getElementById('inv-cust-name').innerText = proj.name;
+                const tbody = document.querySelector('#inv-cust-table tbody'); tbody.innerHTML = '';
+                proj.spaces.forEach(s => {
+                    let descParts = [];
+                    if(s.products.carpet) descParts.push(`سجاد ومفروشات`);
+                    if(s.products.musnad) descParts.push(`تفصيل طقم مساند ديوانية`);
+                    if(s.products.curtain) descParts.push(`تفصيل ستائر مخصصة (${s.products.curtain.length} نافذة)`);
+                    if(s.products.sofa) descParts.push(`طقم كنب مخصص`);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><strong>${s.type}</strong><br><span style="font-size:11px; color:#555;">${s.customName || ''}</span></td><td>${descParts.join(' + ')}</td><td>${s.totalPrice} د.ك</td>`;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('inv-cust-total').innerText = totalSum;
+                document.getElementById('inv-cust-notes-area').innerHTML = proj.notes ? `<strong>شروط وملاحظات الفاتورة:</strong><br>${proj.notes.replace(/\n/g, '<br>')}` : '';
+                triggerPDFGeneration('invoice-customer', `فاتورة_زبون_${proj.name}`);
+            } else {
+                document.getElementById('inv-int-name').innerText = proj.name;
+                document.getElementById('inv-int-phone').innerText = proj.phone || '-';
+                document.getElementById('inv-int-address').innerText = proj.address || '-';
+                document.getElementById('inv-int-date').innerText = proj.date;
+                document.getElementById('inv-int-delivery').innerText = proj.delivery || 'غير محدد';
+                document.getElementById('inv-int-total').innerText = totalSum;
+                document.getElementById('inv-int-notes-area').innerHTML = proj.notes ? `<strong>ملاحظات الإدارة:</strong><br>${proj.notes.replace(/\n/g, '<br>')}` : '';
+
+                const container = document.getElementById('inv-int-spaces-details'); container.innerHTML = '';
+                proj.spaces.forEach((s) => {
+                    const spaceBlock = document.createElement('div');
+                    spaceBlock.style.border = '1px solid #000'; spaceBlock.style.padding = '12px'; spaceBlock.style.marginBottom = '15px';
+                    let html = `<h4>📋 مساحة: ${s.type} [${s.customName || 'عامة'}] - الإجمالي الفرعي: ${s.totalPrice} د.ك</h4><br>`;
+                    if(s.wallsData && s.wallsData.length > 0) {
+                        const imgData = generateStaticCanvasImage(s.wallsData);
+                        html += `<div style="display:flex; gap:20px; margin-bottom:10px;"><img src="${imgData}" style="width:160px; height:110px; border:1px solid #000;" /><div><p><strong>مقاسات الجدران:</strong></p><ol style="padding-right:15px;">`;
+                        s.wallsData.forEach((w, idx) => { html += `<li>جدار #${idx+1}: بقيمة مقاس ${w.lengthValue}م ${w.isDoor ? ' 🚪 [باب]' : ''}</li>`; });
+                        html += `</ol></div></div>`;
+                    }
+                    html += `<div style="font-size:12px;">`;
+                    if(s.products.carpet) html += `<p>🔹 السجاد: ${s.products.carpet.length}×${s.products.carpet.width}م | مسطرة: ${s.products.carpet.pattern} | السعر: ${s.products.carpet.price} د.ك</p>`;
+                    if(s.products.musnad) html += `<p>🔹 المساند: الخام ${s.products.musnad.pattern} | لون ${s.products.musnad.color} | السعر: ${s.products.musnad.price} د.ك</p>`;
+                    if(s.products.sofa) html += `<p>🔹 الكنب: ${s.products.sofa.desc} | السعر: ${s.products.sofa.price} د.ك</p>`;
+                    html += `</div>`; spaceBlock.innerHTML = html; container.appendChild(spaceBlock);
+                });
+                triggerPDFGeneration('invoice-internal', `نسخة_الورشة_${proj.name}`);
+            }
+        }
+
+        // دالة التصدير المعدلة جذرياً لتفادي قيود الهواتف المحمولة وتطبيقات التواصل
+        function triggerPDFGeneration(elementId, fileName) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            
+            const opt = { 
+                margin: 10, 
+                filename: `${fileName}.pdf`, 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2, useCORS: true, logging: false }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+            };
+            
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    element.style.display = 'none';
+                }).catch((err) => {
+                    console.log("تفعيل الخيار البديل المستقر للجوال");
+                    fallbackPrint(element);
+                });
+            } else { 
+                fallbackPrint(element); 
+            }
+        }
+
+        function fallbackPrint(element) {
+            // فتح الفاتورة في نافذة مستقلة جديدة ونظيفة لطباعتها أو حفظها كـ PDF مباشرة
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>طباعة الفاتورة</title>');
+            // نقل تنسيقات التصميم لضمان المظهر والخطوط الاحترافية
+            printWindow.document.write('<style>' + document.getElementsByTagName('style')[0].innerHTML + '</style>');
+            printWindow.document.write('</head><body style="background:white; color:black; padding:20px;">');
+            printWindow.document.write(element.innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            
+            element.style.display = 'none';
+            
+            // تشغيل محاكي الطباعة الافتراضي للهاتف
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+
+        function shareWhatsApp(target) {
+            const proj = projects.find(p => p.id === currentProjectId);
+            let totalSum = 0; proj.spaces.forEach(s => totalSum += Number(s.totalPrice || 0));
+            let msg = `*سالفورد للأثاث والمفروشات*\n*ملخص طلبية الزبون*\n\n*الزبون:* ${proj.name}\n*الرقم:* ${proj.id}\n---------------------------\n`;
+            proj.spaces.forEach((s, idx) => {
+                msg += `*${idx+1}) مساحة ${s.type}* [${s.customName || ''}]\n`;
+                if(s.products.carpet) msg += ` - سجاد: ${s.products.carpet.length}×${s.products.carpet.width}م\n`;
+                if(s.products.musnad) msg += ` - طقم مساند كامل\n`;
+                if(s.products.curtain) msg += ` - ستائر عدد: ${s.products.curtain.length}\n`;
+                if(s.products.sofa) msg += ` - كنب: ${s.products.sofa.desc}\n`;
+                msg += ` *السعر الفرعي:* ${s.totalPrice} د.ك\n\n`;
+            });
+            msg += `---------------------------\n*الإجمالي النهائي:* ${totalSum} د.ك\n`;
+            let phone = (target === 'customer') ? (proj.phone || '') : '96555943343';
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
