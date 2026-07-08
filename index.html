@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مخطط سالفورد للأثاث</title>
     
+    <!-- خط تجوال من جوجل مدمج بأوزان مختلفة -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     
+    <!-- مكتبة html2pdf لتوليد ملفات PDF حقيقية مباشرة من المتصفح -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -225,10 +227,10 @@
             border: 2px dashed var(--gold);
             border-radius: 10px;
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             overflow: hidden;
             touch-action: none; 
-            height: 280px;
+            height: 320px;
         }
 
         canvas {
@@ -238,46 +240,46 @@
             background: transparent;
         }
 
-        .canvas-controls {
+        .canvas-palette {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 12px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
         }
 
-        .wall-input-container {
-            position: absolute;
+        .palette-item {
             background: white;
-            border: 1px solid var(--gold);
+            border: 1px solid #aaa;
             border-radius: 6px;
-            padding: 3px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 3px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-            z-index: 10;
-            transform: translate(-50%, -50%);
+            gap: 4px;
+            color: var(--black);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .wall-input-container input {
-            width: 50px;
-            padding: 4px;
-            font-size: 12px;
-            text-align: center;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .btn-door {
+        .palette-item:active {
             background: #eee;
-            border: none;
-            padding: 3px 5px;
-            font-size: 12px;
-            cursor: pointer;
-            border-radius: 4px;
         }
-        .btn-door.has-door {
-            background: #d9534f;
-            color: white;
+
+        .canvas-controls-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #856404;
+            margin-bottom: 12px;
+            text-align: center;
         }
 
         .curtain-item {
@@ -440,16 +442,25 @@
         <div id="screen-space-details" class="screen">
             <h2 id="space-details-title">تفاصيل المنتجات والمقاسات</h2>
 
+            <!-- أداة السحب والإفلات التفاعلية المحدثة -->
             <div id="section-drawing-tool" style="display:none;">
-                <label style="color:var(--gold); font-weight:bold; margin-bottom:8px;">أداة رسم المساند (اسحب بإصبعك لرسم جدران الغرفة):</label>
+                <label style="color:var(--gold); font-weight:bold; margin-bottom:5px;">مخطط المساند التفاعلي (اسحب العناصر لداخل الغرفة):</label>
+                
+                <div class="canvas-palette">
+                    <div class="palette-item" onclick="addVisualElement('door')">🚪 إضافة باب</div>
+                    <div class="palette-item" onclick="addVisualElement('window')">🪟 إضافة نافذة</div>
+                    <div class="palette-item" onclick="addVisualElement('label')">📏 مربع مقاس</div>
+                </div>
+
                 <div class="canvas-container" id="canvas-wrapper">
                     <canvas id="drawing-canvas"></canvas>
-                    <div id="wall-labels-container"></div>
                 </div>
-                <div class="canvas-controls">
-                    <button class="btn btn-secondary" style="flex:1;" onclick="undoLastWall()">تراجع ↩</button>
-                    <button class="btn btn-primary" style="flex:1;" onclick="closeDrawingShape()">إنهاء الشكل 🔁</button>
+
+                <div class="canvas-controls-box" id="canvas-hint">
+                    💡 اضغط على أي عنصر داخل اللوحة لتحريكه، أو اسحب أطرافه لتكبيره وتصغيره وتغيير المقاس!
                 </div>
+                
+                <button class="btn btn-secondary" style="padding: 8px; font-size:12px; margin-bottom: 15px;" onclick="deleteSelectedElement()">❌ حذف العنصر المحدد من اللوحة</button>
             </div>
 
             <div id="products-fields-inputs"></div>
@@ -510,12 +521,14 @@
         let currentProjectId = null;
         let selectedProducts = { carpet: false, musnad: false, curtain: false, sofa: false };
         
+        // متغيرات لوحة الرسم الجديدة (الكائنات)
         let canvas, ctx;
-        let walls = []; 
-        let isDrawing = false;
-        let startPoint = null; 
-        let lastPoint = null;  
-        let currentMousePoint = { x: 0, y: 0 };
+        let visualElements = []; 
+        let selectedElement = null;
+        let isDragging = false;
+        let isResizing = false;
+        let dragOffset = { x: 0, y: 0 };
+        let activeHandle = null;
 
         function navigate(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -747,156 +760,241 @@
             wrapper.appendChild(item);
         }
 
-        // ==================== أداة الرسم للـ Canvas ====================
+        // ==================== أداة الرسم الذكية القائمة على الكائنات وسحبها وإفلاتها ====================
         function initCanvas() {
             canvas = document.getElementById('drawing-canvas');
             ctx = canvas.getContext('2d');
-            canvas.addEventListener('touchstart', handleStart, false);
-            canvas.addEventListener('touchmove', handleMove, false);
-            canvas.addEventListener('touchend', handleEnd, false);
-            canvas.addEventListener('mousedown', handleStart, false);
-            canvas.addEventListener('mousemove', handleMove, false);
-            canvas.addEventListener('mouseup', handleEnd, false);
+            
+            // أحداث الماوس والجوال الموحدة
+            canvas.addEventListener('mousedown', startInteract);
+            canvas.addEventListener('mousemove', moveInteract);
+            canvas.addEventListener('mouseup', endInteract);
+
+            canvas.addEventListener('touchstart', (e) => { startInteract(e.touches[0]); e.preventDefault(); }, {passive: false});
+            canvas.addEventListener('touchmove', (e) => { moveInteract(e.touches[0]); e.preventDefault(); }, {passive: false});
+            canvas.addEventListener('touchend', (e) => { endInteract(e); e.preventDefault(); }, {passive: false});
         }
 
         function resetDrawingCanvas() {
-            walls = [];
-            isDrawing = false;
-            startPoint = null; 
-            lastPoint = null;
             const wrapper = document.getElementById('canvas-wrapper');
             canvas.width = wrapper.clientWidth;
-            canvas.height = 280;
+            canvas.height = 320;
+            
+            // تهيئة الغرفة كمربع أساسي في المنتصف تلقائياً لتسهيل العمل
+            visualElements = [
+                { id: 'room-wall', type: 'room', x: 40, y: 50, w: canvas.width - 80, h: canvas.height - 130 },
+                { id: 'lbl-top', type: 'label', text: '5.00م', x: canvas.width/2 - 25, y: 25, w: 50, h: 22 },
+                { id: 'lbl-bottom', type: 'label', text: '5.00م', x: canvas.width/2 - 25, y: canvas.height - 70, w: 50, h: 22 },
+                { id: 'lbl-left', type: 'label', text: '4.00م', x: 5, y: canvas.height/2 - 40, w: 32, h: 22 },
+                { id: 'lbl-right', type: 'label', text: '4.00م', x: canvas.width - 38, y: canvas.height/2 - 40, w: 32, h: 22 }
+            ];
+            selectedElement = null;
             redrawCanvas();
         }
 
-        function getEventCoords(e) {
-            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        function addVisualElement(type) {
+            let item = {
+                id: 'el-' + Date.now(),
+                type: type,
+                x: canvas.width / 2 - 30,
+                y: canvas.height / 2 - 15,
+                w: type === 'label' ? 50 : 60,
+                h: type === 'label' ? 22 : 14
+            };
+            if(type === 'label') {
+                let m = prompt("أدخل قيمة المقاس الجانبي (مثال: 2.50م):", "2.50م");
+                if(!m) return;
+                item.text = m;
+            }
+            visualElements.push(item);
+            selectedElement = item;
+            redrawCanvas();
+        }
+
+        function deleteSelectedElement() {
+            if(!selectedElement) { alert("يرجى تحديد عنصر من اللوحة أولاً بالضغط عليه."); return; }
+            if(selectedElement.type === 'room') { alert("لا يمكن حذف جدار الغرفة الرئيسي."); return; }
+            visualElements = visualElements.filter(el => el.id !== selectedElement.id);
+            selectedElement = null;
+            redrawCanvas();
+        }
+
+        function getCanvasCoords(e) {
             const rect = canvas.getBoundingClientRect();
-            return { x: clientX - rect.left, y: clientY - rect.top };
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
         }
 
-        function handleStart(e) {
-            e.preventDefault();
-            isDrawing = true;
-            const coords = getEventCoords(e);
-            currentMousePoint = coords;
-
-            if (walls.length === 0 && startPoint === null) {
-                startPoint = { x: coords.x, y: coords.y };
-                lastPoint = { x: coords.x, y: coords.y };
+        function startInteract(e) {
+            const pt = getCanvasCoords(e);
+            
+            // 1. تحقق من الضغط على مقابض التكبير/التصغير (Resize handles) أولاً إذا كان هناك عنصر محدد
+            if (selectedElement) {
+                let handles = getResizeHandles(selectedElement);
+                for (let hKey in handles) {
+                    let h = handles[hKey];
+                    if (pt.x >= h.x && pt.x <= h.x + h.size && pt.y >= h.y && pt.y <= h.y + h.size) {
+                        isResizing = true;
+                        activeHandle = hKey;
+                        return;
+                    }
+                }
             }
-        }
 
-        function handleMove(e) {
-            if(!isDrawing) return;
-            e.preventDefault();
-            currentMousePoint = getEventCoords(e);
+            // 2. تحقق من الضغط على العناصر نفسها للتحريك (Drag)
+            // نبدأ الفحص من العناصر الأحدث (الأعلى في الترتيب)
+            for (let i = visualElements.length - 1; i >= 0; i--) {
+                let el = visualElements[i];
+                if (pt.x >= el.x && pt.x <= el.x + el.w && pt.y >= el.y && pt.y <= el.y + el.h) {
+                    selectedElement = el;
+                    isDragging = true;
+                    dragOffset.x = pt.x - el.x;
+                    dragOffset.y = pt.y - el.y;
+                    
+                    // إذا ضغط مرتين على مربع القياس، يمكنه تعديل النص المكتوب
+                    if(el.type === 'label' && e.clickCount === 2) {
+                        let newTxt = prompt("تعديل قيمة المقاس الجانبي:", el.text);
+                        if(newTxt) el.text = newTxt;
+                    }
+                    
+                    redrawCanvas();
+                    return;
+                }
+            }
+
+            // إذا ضغط في مكان فارغ، نلغي التحديد
+            selectedElement = null;
             redrawCanvas();
         }
 
-        function handleEnd(e) {
-            if(!isDrawing) return;
-            e.preventDefault();
-            isDrawing = false;
-            
-            let corrected = snapTo8Directions(lastPoint, currentMousePoint);
-            let dist = Math.hypot(corrected.x - lastPoint.x, corrected.y - lastPoint.y);
-            
-            if(dist > 15) {
-                walls.push({ p1: { ...lastPoint }, p2: { ...corrected }, lengthValue: '1.00', isDoor: false });
-                lastPoint = { ...corrected };
-            }
-            redrawCanvas();
-        }
+        function moveInteract(e) {
+            if (!selectedElement) return;
+            const pt = getCanvasCoords(e);
 
-        function snapTo8Directions(p1, p2) {
-            let dx = p2.x - p1.x;
-            let dy = p2.y - p1.y;
-            let angle = Math.atan2(dy, dx);
-            let octant = Math.round(angle / (Math.PI / 4));
-            let newAngle = octant * (Math.PI / 4);
-            let dist = Math.hypot(dx, dy);
-            return { x: p1.x + dist * Math.cos(newAngle), y: p1.y + dist * Math.sin(newAngle) };
-        }
-
-        function undoLastWall() {
-            if(walls.length > 0) {
-                walls.pop();
-                if (walls.length > 0) {
-                    lastPoint = { ...walls[walls.length - 1].p2 };
-                } else {
-                    startPoint = null;
-                    lastPoint = null;
+            if (isDragging) {
+                selectedElement.x = pt.x - dragOffset.x;
+                selectedElement.y = pt.y - dragOffset.y;
+                redrawCanvas();
+            } else if (isResizing) {
+                // منطق سحب الحواف للتكبير والتصغير
+                if (activeHandle === 'right') {
+                    let newW = pt.x - selectedElement.x;
+                    if(newW > 20) selectedElement.w = newW;
+                } else if (activeHandle === 'bottom') {
+                    let newH = pt.y - selectedElement.y;
+                    if(newH > 12) selectedElement.h = newH;
+                } else if (activeHandle === 'corner') {
+                    let newW = pt.x - selectedElement.x;
+                    let newH = pt.y - selectedElement.y;
+                    if(newW > 20) selectedElement.w = newW;
+                    if(newH > 12) selectedElement.h = newH;
                 }
                 redrawCanvas();
             }
         }
 
-        function closeDrawingShape() {
-            if(walls.length < 2) {
-                alert('الرجاء رسم جدارين على الأقل لإغلاق الشكل!');
-                return;
-            }
-            walls.push({ p1: { ...lastPoint }, p2: { ...startPoint }, lengthValue: '1.00', isDoor: false });
-            lastPoint = { ...startPoint };
-            redrawCanvas();
+        function endInteract() {
+            isDragging = false;
+            isResizing = false;
+            activeHandle = null;
+        }
+
+        function getResizeHandles(el) {
+            let s = 10; // حجم مقبض التحكم بالبكسل
+            return {
+                right: { x: el.x + el.w - s/2, y: el.y + el.h/2 - s/2, size: s },
+                bottom: { x: el.x + el.w/2 - s/2, y: el.y + el.h - s/2, size: s },
+                corner: { x: el.x + el.w - s/2, y: el.y + el.h - s/2, size: s }
+            };
         }
 
         function redrawCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#eef0f2';
-            ctx.lineWidth = 1;
+            
+            // رسم شبكة هندسية خفيفة للخلفية
+            ctx.strokeStyle = '#f0f0f0'; ctx.lineWidth = 1;
             for(let i=0; i<canvas.width; i+=20) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
             for(let j=0; j<canvas.height; j+=20) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
 
-            walls.forEach((wall) => {
-                ctx.beginPath();
-                ctx.moveTo(wall.p1.x, wall.p1.y);
-                ctx.lineTo(wall.p2.x, wall.p2.y);
-                if(wall.isDoor) { ctx.strokeStyle = '#d9534f'; ctx.lineWidth = 6; } 
-                else { ctx.strokeStyle = '#0D0D0D'; ctx.lineWidth = 4; }
-                ctx.stroke();
-            });
+            // رسم كافة العناصر
+            visualElements.forEach((el) => {
+                if (el.type === 'room') {
+                    // رسم هيكل الغرفة أو الديوانية الأساسي
+                    ctx.strokeStyle = '#0D0D0D'; ctx.lineWidth = 5;
+                    ctx.strokeRect(el.x, el.y, el.w, el.h);
+                    
+                    // تلوين خفيف لداخل منطقة السجاد والديوانية
+                    ctx.fillStyle = 'rgba(200, 169, 110, 0.04)';
+                    ctx.fillRect(el.x, el.y, el.w, el.h);
+                } 
+                else if (el.type === 'door') {
+                    // رسم الباب بلون أحمر غامق مميز للورشة
+                    ctx.fillStyle = '#d9534f'; ctx.fillRect(el.x, el.y, el.w, el.h);
+                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.strokeRect(el.x, el.y, el.w, el.h);
+                    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px Tajawal'; ctx.textAlign = 'center';
+                    ctx.fillText('🚪 باب', el.x + el.w/2, el.y + el.h - 3);
+                } 
+                else if (el.type === 'window') {
+                    // رسم النافذة باللون الأزرق المريح
+                    ctx.fillStyle = '#007bff'; ctx.fillRect(el.x, el.y, el.w, el.h);
+                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.strokeRect(el.x, el.y, el.w, el.h);
+                    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px Tajawal'; ctx.textAlign = 'center';
+                    ctx.fillText('🪟 نافذة', el.x + el.w/2, el.y + el.h - 3);
+                } 
+                else if (el.type === 'label') {
+                    // رسم مربعات القياس الجانبية الذكية
+                    ctx.fillStyle = '#ffffff'; ctx.fillRect(el.x, el.y, el.w, el.h);
+                    ctx.strokeStyle = 'var(--gold)'; ctx.lineWidth = 1.5; ctx.strokeRect(el.x, el.y, el.w, el.h);
+                    ctx.fillStyle = '#000000'; ctx.font = '10px Tajawal'; ctx.textAlign = 'center';
+                    ctx.fillText(el.text || '1.00م', el.x + el.w/2, el.y + el.h/2 + 4);
+                }
 
-            if(isDrawing && lastPoint !== null) {
-                let corrected = snapTo8Directions(lastPoint, currentMousePoint);
-                ctx.beginPath(); ctx.moveTo(lastPoint.x, lastPoint.y); ctx.lineTo(corrected.x, corrected.y);
-                ctx.strokeStyle = '#999'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
-            }
-            renderWallLabelsInputs();
+                // رسم خط التحديد ومقابض التكبير/التصغير إذا كان العنصر هو المحدد حالياً
+                if (selectedElement && selectedElement.id === el.id) {
+                    ctx.strokeStyle = 'var(--gold)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+                    ctx.strokeRect(el.x - 2, el.y - 2, el.w + 4, el.h + 4); ctx.setLineDash([]);
+                    
+                    // رسم مقابض السحب الصغيرة
+                    let handles = getResizeHandles(el);
+                    ctx.fillStyle = 'var(--gold)';
+                    for (let hKey in handles) {
+                        ctx.fillRect(handles[hKey].x, handles[hKey].y, handles[hKey].size, handles[hKey].size);
+                    }
+                }
+            });
         }
 
-        function renderWallLabelsInputs() {
-            const container = document.getElementById('wall-labels-container');
-            container.innerHTML = '';
-            walls.forEach((wall, index) => {
-                let midX = (wall.p1.x + wall.p2.x) / 2;
-                let midY = (wall.p1.y + wall.p2.y) / 2;
-                const div = document.createElement('div');
-                div.className = 'wall-input-container';
-                div.style.left = `${midX}px`; div.style.top = `${midY}px`;
+        // تحويل محتوى اللوحة التفاعلية لصورة ثابتة مخصصة للفواتير
+        function generateStaticCanvasImage(elementsData) {
+            if(!elementsData || elementsData.length === 0) return '';
+            const tempCanvas = document.createElement('canvas'); tempCanvas.width = 320; tempCanvas.height = 240;
+            const tCtx = tempCanvas.getContext('2d');
+            tCtx.fillStyle = '#ffffff'; tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            elementsData.forEach(el => {
+                let ratioX = tempCanvas.width / canvas.width;
+                let ratioY = tempCanvas.height / canvas.height;
+                let rx = el.x * ratioX, ry = el.y * ratioY, rw = el.w * ratioX, rh = el.h * ratioY;
 
-                const input = document.createElement('input');
-                input.type = 'number'; input.step = '0.01'; input.value = wall.lengthValue;
-                input.oninput = (e) => { wall.lengthValue = e.target.value; };
-
-                const doorBtn = document.createElement('button');
-                doorBtn.className = `btn-door ${wall.isDoor ? 'has-door' : ''}`; doorBtn.innerText = '🚪';
-                doorBtn.onclick = () => {
-                    walls.forEach((w, idx) => { if(idx !== index) w.isDoor = false; });
-                    wall.isDoor = !wall.isDoor;
-                    redrawCanvas();
-                };
-                div.appendChild(input); div.appendChild(doorBtn); container.appendChild(div);
+                if (el.type === 'room') {
+                    tCtx.strokeStyle = '#000000'; tCtx.lineWidth = 4; tCtx.strokeRect(rx, ry, rw, rh);
+                } else if (el.type === 'door') {
+                    tCtx.fillStyle = '#d9534f'; tCtx.fillRect(rx, ry, rw, rh);
+                } else if (el.type === 'window') {
+                    tCtx.fillStyle = '#007bff'; tCtx.fillRect(rx, ry, rw, rh);
+                } else if (el.type === 'label') {
+                    tCtx.fillStyle = '#ffffff'; tCtx.fillRect(rx, ry, rw, rh);
+                    tCtx.strokeStyle = '#C8A96E'; tCtx.lineWidth = 1; tCtx.strokeRect(rx, ry, rw, rh);
+                    tCtx.fillStyle = '#000000'; tCtx.font = '9px Tajawal'; tCtx.textAlign = 'center';
+                    tCtx.fillText(el.text, rx + rw/2, ry + rh/2 + 3);
+                }
             });
+            return tempCanvas.toDataURL('image/png');
         }
 
         function saveSpaceToProject() {
             const type = document.getElementById('space-type').value;
             const customName = document.getElementById('space-custom-name').value.trim();
-            let spacePayload = { type: type, customName: customName, products: {}, wallsData: JSON.parse(JSON.stringify(walls)), totalPrice: 0 };
+            let spacePayload = { type: type, customName: customName, products: {}, visualElementsData: JSON.parse(JSON.stringify(visualElements)), totalPrice: 0 };
             let spaceSum = 0;
 
             if(selectedProducts.carpet) {
@@ -904,7 +1002,6 @@
                 spacePayload.products.carpet = { length: document.getElementById('c-length').value, width: document.getElementById('c-width').value, pattern: document.getElementById('c-pattern').value, color: document.getElementById('c-color').value, price: p };
             }
             if(selectedProducts.musnad) {
-                if(walls.length === 0) { alert('الرجاء رسم مخطط جدران المساحة أولاً!'); return; }
                 let p = parseFloat(document.getElementById('m-price').value) || 0; spaceSum += p;
                 spacePayload.products.musnad = { pattern: document.getElementById('m-pattern').value, color: document.getElementById('m-color').value, price: p };
             }
@@ -929,20 +1026,6 @@
         }
 
         function closeSpaceScreen() { navigate('screen-project-details'); }
-
-        function generateStaticCanvasImage(wallsData) {
-            if(!wallsData || wallsData.length === 0) return '';
-            const tempCanvas = document.createElement('canvas'); tempCanvas.width = 300; tempCanvas.height = 200;
-            const tCtx = tempCanvas.getContext('2d');
-            tCtx.fillStyle = '#ffffff'; tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            wallsData.forEach(wall => {
-                tCtx.beginPath();
-                tCtx.moveTo(wall.p1.x * (300 / 350), wall.p1.y * (200 / 280));
-                tCtx.lineTo(wall.p2.x * (300 / 350), wall.p2.y * (200 / 280));
-                tCtx.strokeStyle = wall.isDoor ? '#d9534f' : '#000000'; tCtx.lineWidth = wall.isDoor ? 5 : 3; tCtx.stroke();
-            });
-            return tempCanvas.toDataURL('image/png');
-        }
 
         function exportPDF(target) {
             const proj = projects.find(p => p.id === currentProjectId);
@@ -980,14 +1063,21 @@
                     const spaceBlock = document.createElement('div');
                     spaceBlock.style.border = '1px solid #000'; spaceBlock.style.padding = '12px'; spaceBlock.style.marginBottom = '15px';
                     let html = `<h4>📋 مساحة: ${s.type} [${s.customName || 'عامة'}] - الإجمالي الفرعي: ${s.totalPrice} د.ك</h4><br>`;
-                    if(s.wallsData && s.wallsData.length > 0) {
-                        const imgData = generateStaticCanvasImage(s.wallsData);
-                        html += `<div style="display:flex; gap:20px; margin-bottom:10px;"><img src="${imgData}" style="width:160px; height:110px; border:1px solid #000;" /><div><p><strong>مقاسات الجدران:</strong></p><ol style="padding-right:15px;">`;
-                        s.wallsData.forEach((w, idx) => { html += `<li>جدار #${idx+1}: بقيمة مقاس ${w.lengthValue}م ${w.isDoor ? ' 🚪 [باب]' : ''}</li>`; });
-                        html += `</ol></div></div>`;
+                    
+                    if(s.visualElementsData && s.visualElementsData.length > 0) {
+                        const imgData = generateStaticCanvasImage(s.visualElementsData);
+                        html += `<div style="display:flex; gap:20px; margin-bottom:10px;"><img src="${imgData}" style="width:160px; height:120px; border:1px solid #000;" /><div><p><strong>عناصر مخطط المساحة الموزعة:</strong></p><ul style="padding-right:15px; font-size:11px;">`;
+                        let lblCount = 1;
+                        s.visualElementsData.forEach((el) => {
+                            if(el.type === 'label') html += `<li>📏 مقاس مخصص رقم ${lblCount++}: بقيمة ${el.text}</li>`;
+                            if(el.type === 'door') html += `<li>🚪 موقع باب مضاف على المخطط</li>`;
+                            if(el.type === 'window') html += `<li>🪟 موقع نافذة مضاف على المخطط</li>`;
+                        });
+                        html += `</ul></div></div>`;
                     }
-                    html += `<div style="font-size:12px;">`;
-                    if(s.products.carpet) html += `<p>🔹 السجاد: ${s.products.carpet.length}×${s.products.carpet.width}م | مسطرة: ${s.products.carpet.pattern} | السعر: ${s.products.carpet.price} د.ك</p>`;
+                    
+                    html += `<div style="font-size:12px; border-top: 1px dashed #ccc; padding-top: 5px;">`;
+                    if(s.products.carpet) html += `<p>🔹 السجاد: ${s.products.carpet.length}×${s.products.carpet.width}م | مسطرة: ${s.products.carpet.pattern} | لون: ${s.products.carpet.color} | السعر: ${s.products.carpet.price} د.ك</p>`;
                     if(s.products.musnad) html += `<p>🔹 المساند: الخام ${s.products.musnad.pattern} | لون ${s.products.musnad.color} | السعر: ${s.products.musnad.price} د.ك</p>`;
                     if(s.products.sofa) html += `<p>🔹 الكنب: ${s.products.sofa.desc} | السعر: ${s.products.sofa.price} د.ك</p>`;
                     html += `</div>`; spaceBlock.innerHTML = html; container.appendChild(spaceBlock);
@@ -996,7 +1086,6 @@
             }
         }
 
-        // دالة التصدير المعدلة جذرياً لتفادي قيود الهواتف المحمولة وتطبيقات التواصل
         function triggerPDFGeneration(elementId, fileName) {
             const element = document.getElementById(elementId);
             element.style.display = 'block';
@@ -1013,7 +1102,6 @@
                 html2pdf().set(opt).from(element).save().then(() => {
                     element.style.display = 'none';
                 }).catch((err) => {
-                    console.log("تفعيل الخيار البديل المستقر للجوال");
                     fallbackPrint(element);
                 });
             } else { 
@@ -1022,22 +1110,15 @@
         }
 
         function fallbackPrint(element) {
-            // فتح الفاتورة في نافذة مستقلة جديدة ونظيفة لطباعتها أو حفظها كـ PDF مباشرة
             const printWindow = window.open('', '_blank');
             printWindow.document.write('<html><head><title>طباعة الفاتورة</title>');
-            // نقل تنسيقات التصميم لضمان المظهر والخطوط الاحترافية
             printWindow.document.write('<style>' + document.getElementsByTagName('style')[0].innerHTML + '</style>');
             printWindow.document.write('</head><body style="background:white; color:black; padding:20px;">');
             printWindow.document.write(element.innerHTML);
             printWindow.document.write('</body></html>');
             printWindow.document.close();
-            
             element.style.display = 'none';
-            
-            // تشغيل محاكي الطباعة الافتراضي للهاتف
-            setTimeout(() => {
-                printWindow.print();
-            }, 500);
+            setTimeout(() => { printWindow.print(); }, 500);
         }
 
         function shareWhatsApp(target) {
