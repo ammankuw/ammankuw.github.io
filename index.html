@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مخطط سالفورد للأثاث</title>
     
-    <!-- خط تجوال من جوجل مدمج بأوزان مختلفة -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght=400;500;700&display=swap" rel="stylesheet">
     
-    <!-- مكتبة html2pdf لتوليد ملفات PDF حقيقية مباشرة من المتصفح -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -299,15 +297,15 @@
             background: #fdfdfd;
         }
 
-        /* حاويات فواتير الطباعة المخفية هيدروليكياً خارج العرض الفعلي */
+        /* حاويات فواتير الطباعة مع حماية المحتوى والخطوط من الانقسام */
         .invoice-print-container {
             position: absolute;
             left: -9999px;
             top: -9999px;
             width: 210mm;
-            background: #ffffff;
-            color: #000000;
-            padding: 20mm;
+            background: #ffffff !important;
+            color: #000000 !important;
+            padding: 15mm;
             box-sizing: border-box;
             direction: rtl;
         }
@@ -327,15 +325,15 @@
         }
 
         .invoice-table th, .invoice-table td {
-            border: 1px solid #000;
+            border: 1px solid #000000 !important;
             padding: 10px;
             text-align: right;
             font-size: 13px;
-            color: #000;
+            color: #000000 !important;
         }
 
         .invoice-table th {
-            background-color: #f5f5f5;
+            background-color: #f5f5f5 !important;
             font-weight: bold;
         }
 
@@ -366,7 +364,7 @@
             border: 2px solid #000;
             padding: 5px;
             border-radius: 4px;
-            page-break-inside: avoid; /* منع انقسام كادر الرسم الحر بين الصفحات */
+            page-break-inside: avoid !important; /* منع انقسام كادر الرسم الحر بين الصفحات */
         }
 
         .internal-canvas-preview-box img {
@@ -384,33 +382,38 @@
         }
         
         .workshop-spec-table th, .workshop-spec-table td {
-            border: 1px solid #444;
-            padding: 8px;
-            font-size: 12px;
+            border: 1px solid #000000 !important;
+            padding: 10px;
+            font-size: 13px;
             text-align: right;
-            color: #000;
+            color: #000000 !important;
+        }
+        
+        .workshop-spec-table tr {
+            page-break-inside: avoid !important; /* حماية الأسطر الفردية من الانقسام العشوائي */
         }
         
         .workshop-spec-table th {
-            background-color: #eaeaea;
+            background-color: #eaeaea !important;
         }
 
         .workshop-space-block {
             border: 2px solid #000; 
             padding: 10px; 
             margin-bottom: 15px; 
-            background-color: #fff;
-            page-break-inside: avoid; /* منع انقسام جدول المساحة والمواصفات عند الفاصل */
+            background-color: #fff !important;
+            page-break-inside: avoid !important; /* منع انقسام كتل البيانات الفنية عند الفواصل */
         }
 
         .internal-notes-block {
             margin-top: 20px; 
-            background: #f5f5f5; 
+            background: #f5f5f5 !important; 
             padding: 12px; 
-            border: 1px solid #999; 
+            border: 1px solid #000 !important; 
             font-size: 13px; 
             line-height: 1.5;
-            page-break-inside: avoid; /* منع انقسام الملاحظات النهائية بين الصفحات */
+            color: #000000 !important;
+            page-break-inside: avoid !important;
         }
     </style>
 </head>
@@ -512,7 +515,6 @@
         <div id="screen-space-details" class="screen">
             <h2 id="space-details-title">تفاصيل المنتجات والمقاسات</h2>
 
-            <!-- لوحة التخطيط والهندسة -->
             <div id="section-drawing-tool" style="display:none;">
                 <label style="color:var(--gold); font-weight:bold; margin-bottom:5px;">لوحة التخطيط (ارسم بيدك ثم اسحب المقاسات):</label>
                 
@@ -544,7 +546,6 @@
         </div>
     </main>
 
-    <!-- الفواتير المخفية والمعدة للطباعة بدقة وبدون اقتصاص للتفاصيل -->
     <div id="invoice-customer" class="invoice-print-container">
         <div class="invoice-header">
             <h2 style="color: #000; font-size: 24px; margin-bottom: 5px;">سالفورد للأثاث والمفروشات</h2>
@@ -574,7 +575,6 @@
         </div>
     </div>
 
-    <!-- نسخة الورشة الفنية التفصيلية كاملة البيانات -->
     <div id="invoice-internal" class="invoice-print-container">
         <div class="invoice-header" style="border-bottom-color: #000; padding-bottom: 8px; margin-bottom: 10px;">
             <h2 style="font-size: 22px; color: #000;">نسخة الإدارة الفنية والورشة (تفصيلية كاملة)</h2>
@@ -587,10 +587,8 @@
             <div style="grid-column: span 2; color: #d9534f; font-weight: bold; font-size: 14px; margin-top:3px;"><p><strong>موعد التسليم النهائي للورشة:</strong> <span id="inv-int-delivery"></span></p></div>
         </div>
         
-        <!-- منطقة عرض مخططات الرسم الحرة للمساند والديوانيات -->
         <div id="inv-int-top-canvas-area"></div>
         
-        <!-- منطقة تفاصيل الخامات والمساطر والألوان جداول منفصلة -->
         <div id="inv-int-spaces-details"></div>
 
         <h3 style="text-align: left; margin-top: 25px; border-top: 3px double #000; padding-top: 10px; font-size: 18px; color: #000; page-break-inside: avoid;">الإجمالي الكلي للطلب: <span id="inv-int-total"></span> د.ك</h3>
@@ -978,7 +976,7 @@
 
                 for (let i = sizeLabels.length - 1; i >= 0; i--) {
                     let el = sizeLabels[i];
-                    if (pt.x >= el.x && pt.x <= el.x + el.w && pt.y >= el.y && pt.y <= el.y + el.h) {
+                    if (pt.x >= el.x && pt.x <= el.x + el.w && pt.y >= el.y && pt.y <= el.h + el.y) {
                         selectedLabel = el;
                         isDraggingLabel = true;
                         dragOffset.x = pt.x - el.x;
@@ -1237,7 +1235,6 @@
                     
                     let html = `<h4 style="font-size:14px; color:#000; background:#f2f2f2; padding:5px; border-bottom:1px solid #000; font-weight:bold;">🛠️ مساحة التنفيذ: ${s.type} [${s.customName || 'عامة'}]</h4>`;
                     
-                    // جدول المواصفات الفنية للورشة
                     html += `<table class="workshop-spec-table">
                                 <thead>
                                     <tr>
@@ -1300,56 +1297,5 @@
                 margin: [10, 10, 10, 10], 
                 filename: `${fileName}.pdf`, 
                 image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2.0, useCORS: true, logging: false, letterRendering: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-            
-            if (typeof html2pdf !== 'undefined') {
-                html2pdf().set(opt).from(element).save().then(() => {
-                    element.style.position = 'absolute';
-                    element.style.left = '-9999px';
-                    element.style.top = '-9999px';
-                }).catch((err) => {
-                    fallbackPrint(element);
-                });
-            } else { 
-                fallbackPrint(element); 
-            }
-        }
-
-        function fallbackPrint(element) {
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write('<html><head><title>طباعة الفاتورة</title>');
-            printWindow.document.write('<style>' + document.getElementsByTagName('style')[0].innerHTML + '</style>');
-            printWindow.document.write('</head><body style="background:white; color:black; padding:20px;">');
-            printWindow.document.write(element.innerHTML);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            
-            element.style.position = 'absolute';
-            element.style.left = '-9999px';
-            element.style.top = '-9999px';
-            setTimeout(() => { printWindow.print(); }, 500);
-        }
-
-        function shareWhatsApp(target) {
-            const proj = projects.find(p => p.id === currentProjectId);
-            let totalSum = 0; proj.spaces.forEach(s => totalSum += Number(s.totalPrice || 0));
-            let msg = `*سالفورد للأثاث والمفروشات*\n*ملخص طلبية الزبون*\n\n*الزبون:* ${proj.name}\n*الرقم:* ${proj.id}\n---------------------------\n`;
-            proj.spaces.forEach((s, idx) => {
-                msg += `*${idx+1}) مساحة ${s.type}* [${s.customName || ''}]\n`;
-                if(s.products.carpet) msg += ` - سجاد: ${s.products.carpet.length}×${s.products.carpet.width}م\n`;
-                if(s.products.musnad) msg += ` - طقم مساند كامل\n`;
-                if(s.products.curtain) msg += ` - ستائر عدد: ${s.products.curtain.length}\n`;
-                if(s.products.sofa) msg += ` - كنب: ${s.products.sofa.desc}\n`;
-                msg += ` *السعر الفرعي:* ${s.totalPrice} د.ك\n\n`;
-            });
-            msg += `---------------------------\n*الإجمالي النهائي:* ${totalSum} د.ك\n`;
-            let phone = (target === 'customer') ? (proj.phone || '') : '96555943343';
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-    </script>
-</body>
-</html>
+                html2canvas: {
 
